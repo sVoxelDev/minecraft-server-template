@@ -8,8 +8,9 @@ services:
       CFG_BASE_URL: ${WEB_BASE_URL}
     ports:
       - ${PROXY_PORT:-25565}:25577/tcp
-      - 8192:8192/tcp
       - ${PROXY_PORT:-25565}:25577/udp
+      # enable to forward votifier
+      # - 8192:8192/tcp
     volumes:
       - ./configs/proxy:/config:z
       - ./servers/proxy:/server:z

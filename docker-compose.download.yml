@@ -6,10 +6,10 @@ services:
       - "./downloads/files:/files"
       - "./downloads/conf:/etc/nginx/conf.d"
     labels:
-      - traefik.http.routers.downloads.rule=Host(`dl.raid-craft.de`)
-      - traefik.http.routers.downloads.entrypoints=websecure
-      - traefik.http.routers.downloads.tls.certresolver=myresolver
-      - traefik.http.routers.downloads.tls=true
+      - traefik.http.routers.downloads-${ENVIRONMENT}.rule=Host(`dl.${WEB_BASE_URL}`)
+      - traefik.http.routers.downloads-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.downloads-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.downloads-${ENVIRONMENT}.tls=true
       - traefik.docker.network=minecraft
     networks:
       - minecraft

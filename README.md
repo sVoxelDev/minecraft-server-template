@@ -12,6 +12,7 @@ Use this repository to quickstart your own Minecraft server network using docker
   * [Adding more servers](#adding-more-servers)
 * [Database](#database)
 * [Dynmap](#dynmap)
+* [Player Analytics](#player-analytics)
 * [Backup](#backup)
 * [Web Traefik](#web-traefik)
 * [Developer Setup](#developer-setup)
@@ -27,7 +28,8 @@ Use this repository to quickstart your own Minecraft server network using docker
 
 * Full minecraft network setup using latest [paper-spigot](https://papermc.io/) and [waterfall](https://github.com/PaperMC/Waterfall) builds.
   *Using other distrubutions, like forge, sponge or veolicty is completly up to you. Just edit the `globals.env`*
-* Up and running standalone dynmap configuration with custom subdomain.
+* Up and running standalone [dynmap](https://www.spigotmc.org/resources/dynmap.274/) configuration with custom subdomain.
+* Ready to use [Player Analytics (Plan)](https://www.spigotmc.org/resources/plan-player-analytics.32536/) integration with custom subdomain.
 * Usage of the [official minecraft docker](https://github.com/itzg/docker-minecraft-server) images from itzg with all config options.
 * Integrated [MariaDB](https://hub.docker.com/_/mariadb) database with not exposed public port for enhanced security.
 * [phpMyAdmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin/) for accessing the database.
@@ -152,7 +154,11 @@ There is also a phpyMyAdmin deployment available under `db.your-server.net`. You
 
 The stack will be deploy with a standalone dynmap webserver and dynmap has to be configured accordingly. To make things easier this template comes with a dynmap `configuration.txt` and preconfigured web directory that works out of the box.
 
-The dynmap can be accessed using `https://map.your-server.net` and is secured with a lets-encrypt certificate by default.
+To enable the dynmap integration download the [dynmap plugin](https://www.spigotmc.org/resources/dynmap.274/) and drop it into the `plugins/` directory. The dynmap can then be accessed using `https://map.your-server.net`.
+
+## Player Analytics
+
+Download the[player analytics](https://www.spigotmc.org/resources/plan-player-analytics.32536/) plugin drop it into the `plugins/` and `proxy-plugins/` directory. Restart your server and access PLAN under `plan.your-server.net`.
 
 ## Backup
 
