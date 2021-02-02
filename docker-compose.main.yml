@@ -16,6 +16,7 @@ services:
     volumes:
       - ./servers/main:/data:z
       - ./schematics:/data/plugins/WorldEdit/schematics:z
+      - ./dynmap/main:/data/plugins/dynmap/web:z
       - ./plugins:/plugins:ro
       - ./configs/main:/config:ro
       - /etc/timezone:/etc/timezone:ro
