@@ -7,6 +7,7 @@ services:
       - backup.secrets.env
       - sql.secrets.env
     volumes:
+      - ./backup:/backup:z
       # We need to communicate with docker
       - /var/run/docker.sock:/tmp/docker.sock:ro
       # Persistent storage of restic cache (greatly speeds up all restic operations)

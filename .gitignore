@@ -7,9 +7,11 @@ downloads/files/
 database/
 rcon/
 worlds/
+backup/
 servers/
 schematics/
 minimal/
+web/
 secrets.env
 *.secrets.env
 .env

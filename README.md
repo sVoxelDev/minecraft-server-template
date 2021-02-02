@@ -10,6 +10,7 @@ Use this repository to quickstart your own Minecraft server network using docker
   * [Installing/Updating plugins](#installingupdating-plugins)
 * [Database](#database)
 * [Dynmap](#dynmap)
+* [Backup](#backup)
 * [Web Traefik](#web-traefik)
 * [Developer Setup](#developer-setup)
   * [Logs and Reboot](#logs-and-reboot)
@@ -124,6 +125,12 @@ There is also a phpyMyAdmin deployment available under `db.your-server.net`. You
 The stack will be deploy with a standalone dynmap webserver and dynmap has to be configured accordingly. To make things easier this template comes with a dynmap `configuration.txt` and preconfigured web directory that works out of the box.
 
 The dynmap can be accessed using `https://map.your-server.net` and is secured with a lets-encrypt certificate by default.
+
+## Backup
+
+The stack comes with a [restic](https://restic.readthedocs.io/) backup [sidecar container](https://hub.docker.com/repository/docker/silthus/mc-restic-compose-backup) which allows configuring any number of backup repositories. [AWS glacier](https://aws.amazon.com/glacier/) can be configured easily, as it is very cheap for huge amount of data.
+
+By default backups are written into the `backup/` directory. Adjust the `backup.env` file to your liking. You can also add a discord webhook to one of your discord channels to get notified when a backup occured. This way you can quickly see if backups are successful or failing.
 
 ## Web Traefik
 
