@@ -4,7 +4,7 @@ services:
     image: itzg/bungeecord
     user: ${CURRENT_USER}
     environment:
-      TYPE: WATERFALL
+      TYPE: ${PROXY_TYPE:-WATERFALL}
       CFG_BASE_URL: ${WEB_BASE_URL}
     ports:
       - ${PROXY_PORT:-25565}:25577/tcp

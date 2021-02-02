@@ -2,12 +2,14 @@
 
 Use this repository to quickstart your own Minecraft server network using docker and git managed configs.
 
+* [Features](#features)
 * [Getting started](#getting-started)
 * [Console & CMD](#console--cmd)
 * [Server](#server)
   * [Directory layout](#directory-layout)
   * [Updating plugin configs](#updating-plugin-configs)
   * [Installing/Updating plugins](#installingupdating-plugins)
+  * [Adding more servers](#adding-more-servers)
 * [Database](#database)
 * [Dynmap](#dynmap)
 * [Backup](#backup)
@@ -20,6 +22,23 @@ Use this repository to quickstart your own Minecraft server network using docker
   * [Debugging](#debugging)
 * [FAQ](#faq)
   * [View the 'live' server log](#view-the-live-server-log)
+
+## Features
+
+* Full minecraft network setup using latest [paper-spigot](https://papermc.io/) and [waterfall](https://github.com/PaperMC/Waterfall) builds.
+  *Using other distrubutions, like forge, sponge or veolicty is completly up to you. Just edit the `globals.env`*
+* Up and running standalone dynmap configuration with custom subdomain.
+* Usage of the [official minecraft docker](https://github.com/itzg/docker-minecraft-server) images from itzg with all config options.
+* Integrated [MariaDB](https://hub.docker.com/_/mariadb) database with not exposed public port for enhanced security.
+* [phpMyAdmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin/) for accessing the database.
+* [RCON Web Interface](https://hub.docker.com/r/itzg/rcon) for easy console access on the go.
+* Full git workflow for managing configurations. Easy rollbacks and change tracking of all configurations.
+* Replacement of sensentive config information when the server starts. See [itzg/minecraft-server](https://github.com/itzg/docker-minecraft-server#replacing-variables-inside-configs) for details.
+* Integrated [backup container](https://hub.docker.com/repository/docker/silthus/mc-restic-compose-backup) for local, remote or cloud backups running every three hours by default.
+* Minecraft world integrity is ensured when backing up by turning auto-save off before and on again after backup.
+* Adding more servers to the network is as easy as copying some files.
+* Integrated webserver on custom subdomain to host downloads, e.g. images, plugins.
+* Development server to create a minimal clone of the production server.
 
 ## Getting started
 
@@ -113,6 +132,14 @@ Drop the `.jar` files of your plugins into the `plugins/` directory. They will b
 By default this means that nested jar files, e.g. the ones from `PlaceholderAPI` will be deleted as well. Include them in the `plugins/` directory under `plugins/PlaceholderAPI/expansions/`.
 
 After you updated plugins you can execute the `zip-plugins.sh` script to create a zip file of all of your plugins that is then available for download and use in the testserver.
+
+### Adding more servers
+
+You can add more servers any time. Just copy the `docker-compose.main.yml` and replace every occurance of `main` with your new server name. Create a custom `<your-server>.env` file to override additional properties and include in the in the `env-files:` part of the compose config. Also update the name of your world by setting the `LEVEL:` property.
+
+Copy the `configs/main/` directory and adjust the `bukkit.yml` and so on.
+
+Create a new empty directory with the name of your server under: `servers/<your-server>`.
 
 ## Database
 
