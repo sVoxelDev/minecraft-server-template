@@ -95,7 +95,7 @@ function download_plugins() {
 
     read -p "Download URL to initial plugins zip file? Leave empty to skip. [your-url.net/plugins.zip]: " plugins
     
-    if [ -z ${plugins+x} ]; then
+    if [[ -v plugins ]]; then
         TMPFILE=`mktemp`
         DEST="$(pwd)/plugins"
         wget "$plugins" -O $TMPFILE
