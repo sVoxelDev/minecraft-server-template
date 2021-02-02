@@ -38,6 +38,7 @@ Use this repository to quickstart your own Minecraft server network using docker
 * Minecraft world integrity is ensured when backing up by turning auto-save off before and on again after backup.
 * Adding more servers to the network is as easy as copying some files.
 * Integrated webserver on custom subdomain to host downloads, e.g. images, plugins.
+* All webservers and external domains are HTTPS enforced and secured with a letsencrypt certificate.
 * Development server to create a minimal clone of the production server.
 
 ## Getting started
