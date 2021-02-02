@@ -1,6 +1,11 @@
 # Minecraft Server Template
 
+[![Spiget Downloads](https://img.shields.io/spiget/downloads/88587)](https://www.spigotmc.org/resources/88587/)
+[![Spiget Rating](https://img.shields.io/spiget/rating/88587)](https://www.spigotmc.org/resources/88587/)
+
 Use this repository to quickstart your own Minecraft server network using docker and git managed configs.
+
+![init](.github/init.gif)
 
 * [Features](#features)
 * [Prerequisites](#prerequisites)
@@ -19,7 +24,7 @@ Use this repository to quickstart your own Minecraft server network using docker
 * [Developer Setup](#developer-setup)
   * [Logs and Reboot](#logs-and-reboot)
   * [phpMyAdmin](#phpmyadmin)
-  * [OP Rechte](#op-rechte)
+  * [OP Rights](#op-rights)
   * [Copying plugins](#copying-plugins)
   * [Debugging](#debugging)
 * [FAQ](#faq)
@@ -54,11 +59,11 @@ Make sure that the following packages are installed and working on your system:
 
 ## Getting started
 
-1. Clone this repository with the `--recursive` flag:
-   `git clone --recursive https://github.com/Silthus/minecraft-server-template.git`
-2. Execute the `init.sh` script:
-   *The script asks you a couple of questions initializing your minecraft network.*
-   *It will also generate a couple of `*secrets.env` files that **must never be commited!**
+1. Use this [repository as a template](https://github.com/Silthus/minecraft-server-template/generate) to create your own and then clone it:
+   `git clone https://github.com/Silthus/minecraft-server-template.git`
+2. Execute the `init.sh` script:  
+   *The script asks you a couple of questions initializing your minecraft network.*  
+   *It will also generate a couple of `*.secrets.env` files that **must never be commited!***
 3. Start the network with `./dc.sh up -d`.
 
 ## Console & CMD
@@ -76,6 +81,8 @@ Additionally there is the option to directly execute commands without mounting t
 ```bash
 ./cmd.sh main op Silthus
 ```
+
+![console](.github/console.gif)
 
 ## Server
 
@@ -186,6 +193,8 @@ You can also use the `backup.sh` script to create an instant backup or cleanup t
 * ``./backup.sh snapshots`` - *Shows all backups.*
 * ``./backup.sh attach`` - *Attaches to the backup container. Use the `rcb` command inside for more details.*
 
+![backup](.github/backup.gif)
+
 ## Web Traefik
 
 [Traefik](https://doc.traefik.io/traefik/) is used to dynamically serve urls, create certificates and make the various web sites accessible under their subdomains.
@@ -217,7 +226,7 @@ The server can be restarted with `./minimal.sh restart minimal` and stopped with
 
 The dev server has an integrated phpMyAdmin webinterface without authentication. Simply access [http://localhost:8080](http://localhost:8080).
 
-### OP Rechte
+### OP Rights
 
 You should give yourself OP rights after joining the server: `./minimal.sh exec minimal rcon-cli op <USER>`
 
