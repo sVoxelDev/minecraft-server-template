@@ -53,9 +53,3 @@
 #    - PluginNameOne
 #    - PluginNameTwo
 #    - PluginNameThree
-
-general-topics:
-  Wiki:
-    shortText: www.raid-craft.de/wiki
-ignore-plugins:
-  - All
