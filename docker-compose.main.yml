@@ -25,7 +25,6 @@ services:
       restic-compose-backup.volumes.include: "servers/main"
     env_file:
       - sql.secrets.env
-      - discord.secrets.env
       - globals.env
       - server-properties.env
     depends_on:

@@ -3,9 +3,11 @@
 source ${PWD}/scripts/utils.sh
 source ${PWD}/scripts/prep-env.sh
 
-create_dirs
-clone_minimal
 download_plugins
 prep_env
 create_secrets
 copy_gradle_scripts
+
+echo "configuration is now all done!"
+echo ""
+echo "start your server with ./dc.sh up -d"

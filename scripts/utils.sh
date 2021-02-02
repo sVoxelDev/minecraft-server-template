@@ -6,7 +6,7 @@ function generatePassword() {
 
 function set_backup_secrets() {
     echo "" > backup.secrets.env
-    set_aws_creds
+    # set_aws_creds
     set_restic_pw
 }
 
@@ -95,7 +95,7 @@ function download_plugins() {
 
     read -p "Download URL to initial plugins zip file? Leave empty to skip. [your-url.net/plugins.zip]: " plugins
     
-    if [ -z "$plugins" ]; then
+    if [ -z ${plugins+x} ]; then
         TMPFILE=`mktemp`
         DEST="$(pwd)/plugins"
         wget "$plugins" -O $TMPFILE
