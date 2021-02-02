@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./dc.sh exec backup /backup.sh --skip-cleanup
+./dc.sh exec backup rcb backup --no-cleanup
