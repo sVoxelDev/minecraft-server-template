@@ -134,7 +134,14 @@ By default backups are written into the `backup/` directory. Adjust the `backup.
 
 To get the status of your backups attach to the backup container and run `rcb status` and `rcb snapshots`.
 
-``./dc.sh exec -it backup sh``
+``./backup.sh attach``
+
+You can also use the `backup.sh` script to create an instant backup or cleanup the repository based on your retention times in `backup.env`.
+
+* ``./backup.sh now`` - *Takes an instant backup.*
+* ``./backup.sh cleanup`` - *Removes old snapshots freeing disk space.*
+* ``./backup.sh snapshots`` - *Shows all backups.*
+* ``./backup.sh attach`` - *Attaches to the backup container. Use the `rcb` command inside for more details.*
 
 ## Web Traefik
 
