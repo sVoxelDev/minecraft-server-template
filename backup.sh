@@ -6,7 +6,7 @@ while [ -n "$1" ]; do
             ./dc.sh exec backup rcb backup --no-cleanup
             ;;
         cleanup) echo "cleaning up old backups..."
-            ./dc.sh exec backup rcb prune
+            ./dc.sh exec backup rcb cleanup
             ;;
         snapshots)
             ./dc.sh exec backup rcb snapshots
