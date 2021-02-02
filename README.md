@@ -128,9 +128,13 @@ The dynmap can be accessed using `https://map.your-server.net` and is secured wi
 
 ## Backup
 
-The stack comes with a [restic](https://restic.readthedocs.io/) backup [sidecar container](https://hub.docker.com/repository/docker/silthus/mc-restic-compose-backup) which allows configuring any number of backup repositories. [AWS glacier](https://aws.amazon.com/glacier/) can be configured easily, as it is very cheap for huge amount of data.
+The stack comes with a [restic](https://restic.readthedocs.io/) backup [sidecar container](https://hub.docker.com/repository/docker/silthus/mc-restic-compose-backup) which allows configuring any number of [backup repositories](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html). [AWS glacier](https://aws.amazon.com/glacier/) can be configured easily, as it is very cheap for huge amount of data.
 
 By default backups are written into the `backup/` directory. Adjust the `backup.env` file to your liking. You can also add a discord webhook to one of your discord channels to get notified when a backup occured. This way you can quickly see if backups are successful or failing.
+
+To get the status of your backups attach to the backup container and run `rcb status` and `rcb snapshots`.
+
+``./dc.sh exec -it backup sh``
 
 ## Web Traefik
 
