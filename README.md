@@ -3,6 +3,7 @@
 Use this repository to quickstart your own Minecraft server network using docker and git managed configs.
 
 * [Features](#features)
+* [Prerequisites](#prerequisites)
 * [Getting started](#getting-started)
 * [Console & CMD](#console--cmd)
 * [Server](#server)
@@ -42,6 +43,14 @@ Use this repository to quickstart your own Minecraft server network using docker
 * Integrated webserver on custom subdomain to host downloads, e.g. images, plugins.
 * All webservers and external domains are HTTPS enforced and secured with a letsencrypt certificate.
 * Development server to create a minimal clone of the production server.
+
+## Prerequisites
+
+Make sure that the following packages are installed and working on your system:
+
+* The latest version of [docker](https://docs.docker.com/engine/install/ubuntu/)
+* The latest version of [docker-compose](https://docs.docker.com/compose/install/)
+* *(Optional)*: **unzip** to download and unzip the initial plugins
 
 ## Getting started
 
