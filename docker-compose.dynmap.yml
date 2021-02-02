@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  dynmap:
+    image: webdevops/php-nginx
+    user: ${CURRENT_USER}
+    environment:
+      WEB_DOCUMENT_INDEX: index.html
+    volumes:
+      - "./dynmap/main:/app:z"
+    networks:
+      - minecraft
+    labels:
+      - traefik.http.routers.dynmap-${ENVIRONMENT}.rule=Host(`map.${WEB_BASE_URL}`)
+      - traefik.http.routers.dynmap-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.dynmap-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.dynmap-${ENVIRONMENT}.tls=true
+      - traefik.docker.network=minecraft
+networks:
+  minecraft:
+    driver: bridge

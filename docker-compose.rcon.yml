@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  rcon:
+    image: itzg/rcon
+    user: ${CURRENT_USER}
+    environment: 
+      RWA_WEBSOCKET_URL_SSL: wss://wss.rcon.${WEB_BASE_URL}
+      RWA_WEBSOCKET_URL: ws://ws.rcon.${WEB_BASE_URL}
+    env_file: 
+      - rcon.env
+      - rcon.secrets.env
+    volumes:
+      - "./rcon:/opt/rcon-web-admin/db:z"
+    networks:
+      - minecraft
+    labels:
+      - traefik.http.routers.rcon-${ENVIRONMENT}.rule=Host(`rcon.${WEB_BASE_URL}`)
+      - traefik.http.services.rcon-${ENVIRONMENT}.loadbalancer.server.port=4326
+      - traefik.http.routers.rcon-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.rcon-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.rcon-${ENVIRONMENT}.tls=true
+      - traefik.http.routers.rcon-${ENVIRONMENT}.service=rcon-${ENVIRONMENT}
+
+      - traefik.http.routers.rconws-${ENVIRONMENT}.rule=Host(`ws.rcon.${WEB_BASE_URL}`)
+      - traefik.http.services.rconws-${ENVIRONMENT}.loadbalancer.server.port=4327
+      - traefik.http.routers.rconws-${ENVIRONMENT}.entrypoints=web
+      - traefik.http.routers.rconws-${ENVIRONMENT}.service=rconws-${ENVIRONMENT}
+
+      - traefik.http.routers.rconwss-${ENVIRONMENT}.rule=Host(`wss.rcon.${WEB_BASE_URL}`)
+      - traefik.http.services.rconwss-${ENVIRONMENT}.loadbalancer.server.port=4327
+      - traefik.http.routers.rconwss-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.rconwss-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.rconwss-${ENVIRONMENT}.tls=true
+      - traefik.http.routers.rconwss-${ENVIRONMENT}.service=rconwss-${ENVIRONMENT}
+
+      - traefik.docker.network=minecraft
+networks:
+  minecraft:
+    driver: bridge

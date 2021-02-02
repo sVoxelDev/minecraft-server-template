@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  downloads:
+    image: nginx:latest
+    volumes:
+      - "./downloads/files:/files"
+      - "./downloads/conf:/etc/nginx/conf.d"
+    labels:
+      - traefik.http.routers.downloads.rule=Host(`dl.raid-craft.de`)
+      - traefik.http.routers.downloads.entrypoints=websecure
+      - traefik.http.routers.downloads.tls.certresolver=myresolver
+      - traefik.http.routers.downloads.tls=true
+      - traefik.docker.network=minecraft
+    networks:
+      - minecraft
+networks:
+  minecraft:
+    driver: bridge

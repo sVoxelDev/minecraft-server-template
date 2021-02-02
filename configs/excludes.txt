@@ -1,0 +1,5 @@
+*.log
+**/plugins/dynmap/web/**
+*.tgz
+*.tar.gz
+*.tar

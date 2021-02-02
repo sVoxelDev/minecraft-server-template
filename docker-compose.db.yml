@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  db:
+    image: mariadb
+    user: ${CURRENT_USER}
+    env_file:
+      - sql.secrets.env
+      - mysql.env
+    networks:
+      - minecraft
+    volumes:
+      - './database:/var/lib/mysql:Z'
+      - './configs/my.cnf:/etc/mysql/my.cnf'
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 40000
+    labels:
+      restic-compose-backup.mariadb: true
+      restic-compose-backup.tags: minecraft,db,${ENVIRONMENT}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    networks:
+      - minecraft
+    labels:
+      - traefik.http.routers.phpmyadmin-${ENVIRONMENT}.rule=Host(`db.${WEB_BASE_URL}`)
+      - traefik.http.routers.phpmyadmin-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.phpmyadmin-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.phpmyadmin-${ENVIRONMENT}.tls=true
+      - traefik.docker.network=minecraft
+networks:
+  minecraft:
+    driver: bridge
+volumes:
+  cache:

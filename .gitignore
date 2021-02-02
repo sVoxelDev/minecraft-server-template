@@ -1,0 +1,16 @@
+*.jar
+*.json
+eula.txt
+*.log
+
+downloads/files/
+database/
+rcon/
+worlds/
+servers/
+schematics/
+minimal/
+secrets.env
+*.secrets.env
+.env
+ports.env

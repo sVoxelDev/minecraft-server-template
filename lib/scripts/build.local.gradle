@@ -1,0 +1,17 @@
+task installPlugin(type: Copy) {
+
+    def filesToCopy = copySpec {
+        dependsOn build
+        from configurations.runtime
+        from jar
+        rename { String fileName -> "${pluginName}.jar" }
+    }
+
+    into 'BASE_PATH'
+    def dest = project.properties['target'] ?: "plugins"
+    into(dest) {
+      with filesToCopy
+    }
+}
+
+installPlugin.shouldRunAfter(build)

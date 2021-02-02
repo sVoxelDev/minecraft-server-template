@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  minimal:
+    image: itzg/minecraft-server:adopt11
+    user: ${CURRENT_USER}
+    restart: always
+    environment:
+      JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      # enable this once at the beginning to write the database credentials
+      # keeping this enabled will slow down your server startup
+      REPLACE_ENV_VARIABLES: "TRUE"
+    volumes:
+      - './servers/minimal/server:/data'
+      - './plugins:/plugins'
+    env_file:
+      - sql.secrets.env
+      - globals.env
+      - server-properties.env
+    ports:
+      - 5005:5005
+      - 25565:25565
+    networks:
+      - minecraft
+    depends_on:
+      - db
+  db:
+    image: mariadb
+    user: ${CURRENT_USER}
+    env_file:
+      - sql.secrets.env
+      - mysql.env
+    networks:
+      - minecraft
+    volumes:
+      - './servers/minimal/database:/var/lib/mysql:Z'
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-minecraft}
+    env_file:
+      - sql.secrets.env
+    networks:
+      - minecraft
+    depends_on:
+      - db
+    ports:
+      - 8080:80
+networks:
+  minecraft:
+    driver: bridge

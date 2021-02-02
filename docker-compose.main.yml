@@ -1,0 +1,37 @@
+version: '3.7'
+services: 
+  main:
+    image: itzg/minecraft-server:adopt11
+    command: --world-dir=/data/worlds
+    user: ${CURRENT_USER}
+    restart: always
+    ports:
+      - ${QUERY_PORT:-25575}:${QUERY_PORT:-25575}/udp
+    environment:
+      LEVEL: world
+      SERVER_NAME: main
+      CFG_SERVER_NAME: main
+      MEMORY: ${MEMORY:-8G}
+      CFG_SERVER_NAME: Main
+    volumes:
+      - ./servers/main:/data:z
+      - ./schematics:/data/plugins/WorldEdit/schematics:z
+      - ./plugins:/plugins:ro
+      - ./configs/main:/config:ro
+      - /etc/timezone:/etc/timezone:ro
+    labels:
+      restic-compose-backup.minecraft: true
+      restic-compose-backup.tags: minecraft,main,${ENVIRONMENT}
+      restic-compose-backup.volumes.include: "servers/main"
+    env_file:
+      - sql.secrets.env
+      - discord.secrets.env
+      - globals.env
+      - server-properties.env
+    depends_on:
+      - db
+    networks:
+      - minecraft
+networks:
+  minecraft:
+    driver: bridge

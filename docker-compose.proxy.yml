@@ -1,0 +1,34 @@
+version: '3.7'
+services: 
+  proxy:
+    image: itzg/bungeecord
+    user: ${CURRENT_USER}
+    environment:
+      TYPE: WATERFALL
+      CFG_BASE_URL: ${WEB_BASE_URL}
+    ports:
+      - ${PROXY_PORT:-25565}:25577/tcp
+      - 8192:8192/tcp
+      - ${PROXY_PORT:-25565}:25577/udp
+    volumes:
+      - ./configs/proxy:/config:z
+      - ./servers/proxy:/server:z
+      - ./proxy-plugins:/plugins:z
+    networks:
+      - minecraft
+    env_file:
+      - sql.secrets.env
+      - globals.env
+    labels:
+      - traefik.http.routers.plan-${ENVIRONMENT}.rule=Host(`plan.${WEB_BASE_URL}`)
+      - traefik.http.services.plan-${ENVIRONMENT}.loadbalancer.server.port=8804
+      - traefik.http.routers.plan-${ENVIRONMENT}.entrypoints=websecure
+      - traefik.http.routers.plan-${ENVIRONMENT}.tls.certresolver=myresolver
+      - traefik.http.routers.plan-${ENVIRONMENT}.tls=true
+      - traefik.docker.network=minecraft
+      - restic-compose-backup.volumes=true
+      - restic-compose-backup.tags=minecraft,proxy,${ENVIRONMENT}
+      - restic-compose-backup.volumes.include="servers/proxy"
+networks:
+  minecraft:
+    driver: bridge

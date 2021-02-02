@@ -1,0 +1,21 @@
+version: '3.7'
+services:  
+  backup:
+    image: silthus/mc-restic-compose-backup
+    env_file:
+      - backup.env
+      - backup.secrets.env
+      - sql.secrets.env
+    volumes:
+      # We need to communicate with docker
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      # Persistent storage of restic cache (greatly speeds up all restic operations)
+      - cache:/cache
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - minecraft
+volumes:
+  cache:
+networks:
+  minecraft:
+    driver: bridge
