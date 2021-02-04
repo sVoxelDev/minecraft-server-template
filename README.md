@@ -249,6 +249,14 @@ if (project.hasProperty("local_script")) {
 
 The development server started with `minimal.sh` will automatically expose the default remote debugging port under `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005`.
 
+Here is how to setup IntelliJ with a remote debug task.
+
+![step1](.github/remote_debug_1.png) ![step2](.github/remote_debug_2.png) ![step3](.github/remote_debug_3.png)
+
+And then start your development server (`./minimal.sh up -d`) and attach to it using the task we just created.
+
+![start_1](.github/remote_debug_run_1.png) ![start_2](.github/remote_debug_run_2.png)
+
 ## FAQ
 
 ### View the 'live' server log
