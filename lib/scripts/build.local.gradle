@@ -2,7 +2,7 @@ task installPlugin(type: Copy) {
 
     def filesToCopy = copySpec {
         dependsOn build
-        from configurations.runtime
+        from configurations.runtimeClasspath
         from jar
         rename { String fileName -> "${pluginName}.jar" }
     }
