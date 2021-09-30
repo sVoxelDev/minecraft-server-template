@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   minimal:
-    image: itzg/minecraft-server:adopt11
+    image: itzg/minecraft-server
     user: ${CURRENT_USER}
     restart: always
     environment:

@@ -1,7 +1,7 @@
 version: '3.7'
 services: 
   main:
-    image: itzg/minecraft-server:adopt11
+    image: itzg/minecraft-server
     command: --world-dir=/data/worlds
     user: ${CURRENT_USER}
     restart: always
