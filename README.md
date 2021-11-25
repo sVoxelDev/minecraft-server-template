@@ -2,6 +2,7 @@
 
 [![Spiget Downloads](https://img.shields.io/spiget/downloads/88587)](https://www.spigotmc.org/resources/88587/)
 [![Spiget Rating](https://img.shields.io/spiget/rating/88587)](https://www.spigotmc.org/resources/88587/)
+[![Discord Shield](https://discordapp.com/api/guilds/905798902874267690/widget.png?style=shield)](https://discord.gg/HSU8FtgjVD)
 
 Use this repository to quickstart your own Minecraft server network using docker and git managed configs.
 
