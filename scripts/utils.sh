@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function generatePassword() {
-	echo $(cat /dev/urandom | tr -dc a-zA-Z0-9 | head -c21; echo)
+    echo $(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 21 ; echo)
 }
 
 function set_backup_secrets() {
