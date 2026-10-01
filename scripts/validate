@@ -171,6 +171,8 @@ class Validation:
                 self.cli(network, 'compose', 'up', '-d', '--force-recreate', '--wait', '--wait-timeout', '600')
                 login = self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--verify-cli', network / 'scripts/minecraft'], limit=40)
                 self.check('real client enters play through authenticated modern forwarding', 'ForwardProof' in login.stdout and '"play": true' in login.stdout)
+                join_logs = self.cli(network, 'compose', 'logs', '--no-color', 'server', 'proxy').stdout
+                self.check('backend logged the real client join', 'ForwardProof joined the game' in join_logs)
                 server_id = self.cli(network, 'compose', 'ps', '-q', 'server').stdout.strip()
                 address = self.execute(network, ['docker', 'inspect', '--format', '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}', server_id], limit=30).stdout.strip()
                 denied = self.execute(network, ['python3', network / 'tests/login.py', '--host', address, '--port', '25565', '--expect', 'deny'], limit=40)
