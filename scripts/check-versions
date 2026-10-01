@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import sys
+import urllib.parse
+import urllib.request
+
+ROOT = Path(__file__).resolve().parent.parent
+PINS = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
+
+
+def fetch(url, headers=None):
+    request = urllib.request.Request(url, headers={'User-Agent': 'minecraft-server-template-version-verifier/1.0', **(headers or {})})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.read()
+
+
+def get(url, headers=None):
+    return json.loads(fetch(url, headers))
+
+
+def require(label, condition):
+    if not condition:
+        raise ValueError(label)
+
+
+def main():
+    evidence = {'verified_at': datetime.now(timezone.utc).isoformat(), 'software': {}, 'images': {}}
+    for project, version_key, build_key, hash_key in [
+        ('paper', 'PAPER_VERSION', 'PAPER_BUILD', 'PAPER_SHA256'),
+        ('velocity', 'VELOCITY_VERSION', 'VELOCITY_BUILD_ID', 'VELOCITY_SHA256')]:
+        url = f'https://fill.papermc.io/v3/projects/{project}/versions/{PINS[version_key]}/builds/{PINS[build_key]}'
+        build = get(url)
+        artifact = build['downloads']['server:default']
+        require(project + ' must be STABLE', build['channel'] == 'STABLE')
+        require(project + ' artifact identity changed', artifact['checksums']['sha256'] == PINS[hash_key])
+        evidence['software'][project] = {'version': PINS[version_key], 'build': PINS[build_key], 'channel': build['channel'],
+                                         'sha256': PINS[hash_key], 'source': url, 'download': artifact['url']}
+    manifest_url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
+    manifest = get(manifest_url)
+    version = next(item for item in manifest['versions'] if item['id'] == PINS['VANILLA_VERSION'])
+    metadata = get(version['url'])
+    require('Vanilla must be a released version', version['type'] == 'release')
+    require('Vanilla requires Java 25', metadata['javaVersion']['majorVersion'] == 25)
+    require('Vanilla artifact identity changed', metadata['downloads']['server']['sha1'] == PINS['VANILLA_SERVER_SHA1'])
+    evidence['software']['vanilla'] = {'version': version['id'], 'latest_release': manifest['latest']['release'],
+                                      'server': metadata['downloads']['server'], 'source': version['url']}
+    for key, pin in PINS.items():
+        if not key.endswith('_IMAGE'):
+            continue
+        reference, digest = pin.split('@')
+        repository, tag = reference.rsplit(':', 1)
+        if '/' not in repository:
+            repository = 'library/' + repository
+        token = get('https://auth.docker.io/token?' + urllib.parse.urlencode({
+            'service': 'registry.docker.io', 'scope': 'repository:' + repository + ':pull'}))['token']
+        headers = {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json'}
+        body = fetch('https://registry-1.docker.io/v2/' + repository + '/manifests/' + digest, headers)
+        require('Image digest mismatch: ' + key, 'sha256:' + hashlib.sha256(body).hexdigest() == digest)
+        index = json.loads(body)
+        platforms = {item['platform']['architecture']: item['digest'] for item in index['manifests'] if item.get('platform', {}).get('os') == 'linux'}
+        require('Missing amd64/arm64: ' + key, {'amd64', 'arm64'} <= platforms.keys())
+        for architecture in ['amd64', 'arm64']:
+            child_digest = platforms[architecture]
+            child_headers = {**headers, 'Accept': 'application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json'}
+            child = fetch('https://registry-1.docker.io/v2/' + repository + '/manifests/' + child_digest, child_headers)
+            require('Platform manifest digest mismatch: ' + key + '/' + architecture, 'sha256:' + hashlib.sha256(child).hexdigest() == child_digest)
+        evidence['images'][key] = {'reference': pin, 'platforms': platforms}
+    print(json.dumps(evidence, indent=2, sort_keys=True))
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (ValueError, OSError, KeyError, StopIteration) as error:
+        print(json.dumps({'error': str(error)}), file=sys.stderr)
+        sys.exit(1)

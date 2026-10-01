@@ -1,0 +1,21 @@
+name: Verify pinned versions
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '19 8 * * 1'
+  pull_request:
+    paths: [versions.env, scripts/check-versions]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: mkdir -p validation-output && ./scripts/check-versions > validation-output/version-check.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: version-verification
+          path: validation-output/

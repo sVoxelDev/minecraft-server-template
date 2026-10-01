@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+import argparse
+import ipaddress
+import json
+import os
+from pathlib import Path
+import re
+import secrets
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parent.parent
+STATE = ROOT / '.state'
+
+
+def emit(value):
+    print(json.dumps(value, sort_keys=True))
+
+
+def run(args, timeout=600, capture=False):
+    return subprocess.run(args, cwd=ROOT, check=True, text=True, timeout=timeout,
+                          stdout=subprocess.PIPE if capture else None)
+
+
+def pins():
+    return dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
+
+
+def settings():
+    if not (STATE / 'settings.json').exists():
+        raise ValueError('Run setup --accept-eula first.')
+    config = json.loads((STATE / 'settings.json').read_text())
+    for name in ['rcon', 'restic', 'forwarding', 'database', 'database_root']:
+        path = STATE / 'secrets' / name
+        if not path.is_file() or not re.fullmatch('[a-f0-9]{64}\\n?', path.read_text()):
+            raise ValueError(f'Missing or invalid protected secret: {name}')
+        if path.stat().st_mode & 0o077:
+            raise ValueError(f'Secret permissions must be 0600: {name}')
+    return config
+
+
+def compose(*args, timeout=600, capture=False):
+    settings()
+    return run(['docker', 'compose', '--project-directory', str(ROOT), '--env-file', str(ROOT / 'versions.env'),
+                '--env-file', str(STATE / 'settings.env'), '-f', str(ROOT / 'compose.yaml'),
+                '-f', str(STATE / 'compose.yaml'), *args], timeout, capture)
+
+
+def setup(args):
+    if not args.accept_eula:
+        raise ValueError('Explicit --accept-eula is required. Read https://aka.ms/MinecraftEULA')
+    address = ipaddress.ip_address(args.bind)
+    binding = '[' + args.bind + ']' if address.version == 6 else args.bind
+    if not 1 <= args.port <= 65535 or not 1 <= args.web_port <= 65535:
+        raise ValueError('Ports must be between 1 and 65535.')
+    if not re.fullmatch(r'[1-9][0-9]*[MG]', args.memory):
+        raise ValueError('Memory must use a positive integer followed by M or G.')
+    mb = int(args.memory[:-1]) * (1024 if args.memory[-1] == 'G' else 1)
+    if mb < 1024:
+        raise ValueError('Minecraft needs at least 1024M heap.')
+    if '\n' in args.motd or '\r' in args.motd:
+        raise ValueError('MOTD must be one line.')
+    if args.network and args.distribution != 'paper':
+        raise ValueError('Velocity modern forwarding requires Paper. Use standalone Vanilla.')
+    if STATE.exists() and (STATE / 'settings.json').exists():
+        existing = settings()
+        requested = {'distribution': args.distribution, 'network': args.network, 'port': args.port,
+                     'bind': args.bind, 'memory': args.memory, 'profiles': sorted(args.profile),
+                     'motd': args.motd, 'web_port': args.web_port}
+        if any(existing[key] != value for key, value in requested.items()):
+            raise ValueError('Setup already exists with different options. See docs/operations.md for deliberate reconfiguration.')
+        emit({'setup': 'unchanged', 'distribution': existing['distribution'], 'network': existing['network']})
+        return
+    legacy = [name for name in ['servers/main', 'servers/proxy', 'sql.secrets.env', 'rcon.secrets.env',
+                               'backup.secrets.env', 'ports.env', 'minimal'] if (ROOT / name).exists()]
+    if legacy or (ROOT / 'data/server').exists() and any((ROOT / 'data/server').iterdir()):
+        raise ValueError('Existing deployment detected. Use docs/migration.md before setup: ' + ', '.join(legacy))
+    if args.network and any((ROOT / path).exists() for path in ['configs/server/config/paper-global.yml', 'configs/server/spigot.yml']):
+        raise ValueError('Existing forwarding configuration requires deliberate migration.')
+    STATE.mkdir(mode=0o700, exist_ok=True)
+    (STATE / 'secrets').mkdir(mode=0o700, exist_ok=True)
+    for name in ['rcon', 'restic', 'forwarding', 'database', 'database_root']:
+        path = STATE / 'secrets' / name
+        if path.exists():
+            if not re.fullmatch('[a-f0-9]{64}\\n?', path.read_text()):
+                raise ValueError(f'Invalid existing secret: {name}')
+        else:
+            with path.open('x') as output:
+                os.chmod(path, 0o600)
+                output.write(secrets.token_hex(32) + '\n')
+    for name in ['data/server', 'data/proxy', 'backups', 'configs/server', 'plugins/server', 'plugins/proxy', 'web']:
+        (ROOT / name).mkdir(parents=True, exist_ok=True)
+        if name.startswith('data/') or name in ['backups', 'configs/server']:
+            os.chmod(ROOT / name, 0o700)
+    if not (ROOT / 'web/index.html').exists():
+        (ROOT / 'web/index.html').write_text('<!doctype html><title>Minecraft files</title><h1>Minecraft files</h1>\n')
+    config = {'distribution': args.distribution, 'network': args.network, 'port': args.port,
+              'bind': args.bind, 'memory': args.memory, 'profiles': sorted(args.profile),
+              'motd': args.motd, 'web_port': args.web_port}
+    current = pins()
+    profiles = sorted(set(args.profile + (['proxy'] if args.network else [])))
+    env = {'COMPOSE_PROJECT_NAME': 'minecraft-' + secrets.token_hex(4), 'COMPOSE_PROFILES': ','.join(profiles),
+           'RUN_UID': str(os.getuid()), 'RUN_GID': str(os.getgid()), 'EULA': 'TRUE',
+           'DISTRIBUTION': args.distribution.upper(),
+           'MC_VERSION': current['PAPER_VERSION' if args.distribution == 'paper' else 'VANILLA_VERSION'],
+           'MEMORY': args.memory, 'CONTAINER_MEMORY': str(mb + 1024) + 'M',
+           'ONLINE_MODE': str(not args.network).lower(), 'GAME_PORT': str(args.port),
+           'BIND_ADDRESS': binding, 'WEB_PORT': str(args.web_port), 'MOTD': args.motd}
+    (STATE / 'settings.env').write_text(''.join(key + '=' + "'" + value.replace("'", "\\'") + "'\n" for key, value in env.items()))
+    overlay = {'services': {'server': {}}}
+    if not args.network:
+        overlay['services']['server']['ports'] = [f'{binding}:{args.port}:25565']
+    (STATE / 'compose.yaml').write_text(json.dumps(overlay))
+    secret = (STATE / 'secrets/forwarding').read_text().strip()
+    if args.network:
+        global_config = ROOT / 'configs/server/config/paper-global.yml'
+        global_config.parent.mkdir(exist_ok=True)
+        if global_config.exists():
+            raise ValueError('Existing Paper global config requires deliberate migration.')
+        global_config.write_text('proxies:\n  velocity:\n    enabled: true\n    online-mode: true\n    secret: "' + secret + '"\n')
+        os.chmod(global_config, 0o600)
+        (ROOT / 'configs/server/spigot.yml').write_text('settings:\n  bungeecord: false\n')
+    (STATE / 'velocity.toml').write_text('''config-version = "2.7"
+bind = "0.0.0.0:25565"
+motd = "Minecraft Velocity network"
+show-max-players = 20
+online-mode = true
+force-key-authentication = true
+player-info-forwarding-mode = "modern"
+forwarding-secret-file = "forwarding.secret"
+[servers]
+main = "server:25565"
+try = ["main"]
+[forced-hosts]
+"localhost" = ["main"]
+[advanced]
+accepts-transfers = false
+''')
+    (STATE / 'settings.json').write_text(json.dumps(config, indent=2) + '\n')
+    settings()
+    emit({'setup': 'created', 'distribution': args.distribution, 'network': args.network, 'profiles': profiles})
+
+
+def doctor():
+    version = json.loads(run(['docker', 'version', '--format', '{{json .}}'], 30, True).stdout)
+    major = int(version['Server']['Version'].split('.')[0])
+    if major < 28:
+        raise ValueError('Docker Engine 28+ is required for safe loopback publishing.')
+    plugin = run(['docker', 'compose', 'version', '--short'], 30, True).stdout.strip()
+    if not re.match(r'v?[25]\.', plugin):
+        raise ValueError('Docker Compose plugin v2 or v5 is required.')
+    compose('config', '--quiet', timeout=30)
+    emit({'docker': version['Server']['Version'], 'architecture': version['Server']['Arch'], 'compose': plugin,
+          'configuration': 'valid', 'pins': pins()})
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Reproducible Minecraft deployment. Secrets stay in protected files.')
+    commands = parser.add_subparsers(dest='command', required=True)
+    init = commands.add_parser('setup', help='Initialize once; optionally start and wait for readiness.')
+    init.add_argument('--accept-eula', action='store_true')
+    init.add_argument('--distribution', choices=['paper', 'vanilla'], default='paper')
+    init.add_argument('--network', action='store_true', help='Use authenticated Velocity modern forwarding.')
+    init.add_argument('--profile', choices=['backup', 'database', 'web'], action='append', default=[])
+    init.add_argument('--bind', default='0.0.0.0')
+    init.add_argument('--port', type=int, default=25565)
+    init.add_argument('--web-port', type=int, default=8080)
+    init.add_argument('--memory', default='2G')
+    init.add_argument('--motd', default='Minecraft server')
+    init.add_argument('--start', action='store_true')
+    init.add_argument('--wait', type=int, default=600)
+    for name in ['start', 'stop', 'status', 'doctor', 'backup', 'snapshots']:
+        sub = commands.add_parser(name)
+        if name == 'start':
+            sub.add_argument('--wait', type=int, default=600)
+    rcon = commands.add_parser('command', help='Execute an internal authenticated RCON command.')
+    rcon.add_argument('text', nargs='+')
+    raw = commands.add_parser('compose', help='Pass arguments to this project only; resolved config contains credentials.')
+    raw.add_argument('args', nargs=argparse.REMAINDER)
+    restore = commands.add_parser('restore', help='Restore into a separate empty directory; never replace the server.')
+    restore.add_argument('destination', type=Path)
+    restore.add_argument('--snapshot', default='latest')
+    args = parser.parse_args()
+    if args.command == 'setup':
+        if args.wait < 1 or args.wait > 1800:
+            raise ValueError('--wait must be between 1 and 1800 seconds.')
+        setup(args)
+        if not args.start:
+            return
+    if args.command in ['setup', 'start']:
+        if args.wait < 1 or args.wait > 1800:
+            raise ValueError('--wait must be between 1 and 1800 seconds.')
+        doctor()
+        compose('up', '-d', '--wait', '--wait-timeout', str(args.wait), timeout=args.wait + 120)
+        compose('exec', '-T', 'server', 'rcon-cli', 'list', timeout=30)
+        emit({'ready': True})
+    elif args.command == 'doctor':
+        doctor()
+    elif args.command == 'stop':
+        compose('down', '--timeout', '120', timeout=180)
+    elif args.command == 'status':
+        print(compose('ps', '--all', '--format', 'json', timeout=30, capture=True).stdout, end='')
+    elif args.command == 'command':
+        compose('exec', '-T', 'server', 'rcon-cli', ' '.join(args.text), timeout=60)
+    elif args.command == 'compose':
+        compose(*args.args)
+    elif args.command == 'backup':
+        result = compose('run', '--rm', '--no-deps', '-e', 'BACKUP_INTERVAL=0', '-e', 'INITIAL_DELAY=0',
+                         '-e', 'BACKUP_ON_STARTUP=true', 'backup', capture=True)
+        print(result.stdout, end='')
+        if 'Backup failed' in result.stdout:
+            raise ValueError('Backup reported an error; inspect service logs.')
+    elif args.command == 'snapshots':
+        compose('run', '--rm', '--no-deps', '--entrypoint', 'restic', 'backup', 'snapshots', '--json')
+    elif args.command == 'restore':
+        destination = args.destination.resolve()
+        protected = [ROOT / name for name in ['data', '.state', 'backups', 'configs', 'plugins']]
+        if destination == ROOT or any(path == destination or path in destination.parents for path in protected):
+            raise ValueError('Restore destination must be separate from active server data.')
+        if destination.exists() and any(destination.iterdir()):
+            raise ValueError('Restore destination must be empty.')
+        if not re.fullmatch(r'latest|[a-f0-9]{8,64}', args.snapshot):
+            raise ValueError('Snapshot must be latest or a restic hex ID.')
+        destination.mkdir(parents=True, exist_ok=True)
+        compose('run', '--rm', '--no-deps', '-v', str(destination) + ':/restore', '--entrypoint', 'restic',
+                'backup', 'restore', args.snapshot, '--target', '/restore')
+        emit({'restored': str(destination / 'data'), 'snapshot': args.snapshot})
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (ValueError, OSError, subprocess.SubprocessError) as error:
+        print(json.dumps({'error': str(error)}), file=sys.stderr)
+        sys.exit(1)

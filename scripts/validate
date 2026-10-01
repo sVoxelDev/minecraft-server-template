@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+import argparse
+from datetime import datetime, timezone
+import importlib.machinery
+import json
+from pathlib import Path
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / 'tests'))
+from test_cli import copy_template
+
+
+def port():
+    with socket.socket() as connection:
+        connection.bind(('127.0.0.1', 0))
+        return connection.getsockname()[1]
+
+
+class Validation:
+    def __init__(self, output):
+        self.output = output
+        self.output.mkdir(parents=True, exist_ok=True)
+        self.projects = []
+        self.temporary = tempfile.TemporaryDirectory(prefix='minecraft validation ')
+        self.results = []
+
+    def redact(self, value):
+        for root in self.projects:
+            directory = root / '.state/secrets'
+            if directory.exists():
+                for path in directory.iterdir():
+                    secret = path.read_text().strip()
+                    if secret:
+                        value = value.replace(secret, '[REDACTED]')
+        return value
+
+    def execute(self, root, args, limit=720, success=True):
+        command = ['timeout', '--signal=TERM', '--kill-after=30s', str(limit), *map(str, args)]
+        started = datetime.now(timezone.utc).isoformat()
+        result = subprocess.run(command, cwd=root, stdin=subprocess.DEVNULL, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=limit + 45)
+        event = {'timestamp': started, 'cwd': str(root), 'command': command, 'exit': result.returncode,
+                 'output': self.redact(result.stdout)}
+        with (self.output / 'commands.jsonl').open('a') as log:
+            log.write(json.dumps(event) + '\n')
+        print(f'{started} exit={result.returncode} {self.redact(" ".join(map(str, args)))}', flush=True)
+        if success and result.returncode:
+            raise RuntimeError(self.redact(result.stdout[-5000:]))
+        return result
+
+    def cli(self, root, *args, **kwargs):
+        return self.execute(root, [root / 'scripts/minecraft', *args], **kwargs)
+
+    def check(self, label, condition):
+        self.results.append({'assertion': label, 'passed': bool(condition)})
+        (self.output / 'assertions.json').write_text(json.dumps(self.results, indent=2) + '\n')
+        if not condition:
+            raise AssertionError(label)
+        print('PASS ' + label, flush=True)
+
+    def fresh(self, name, *options):
+        root = Path(self.temporary.name) / name
+        root.mkdir()
+        copy_template(root)
+        self.projects.append(root)
+        game_port = port()
+        self.cli(root, 'setup', '--accept-eula', '--bind', '127.0.0.1', '--port', game_port,
+                 '--web-port', port(), '--memory', '2G', '--motd', 'Validation proof', *options)
+        return root, game_port
+
+    def status(self, root, game_port, expected):
+        result = self.execute(root, [root / 'scripts/status', '--port', game_port], limit=30)
+        response = json.loads(result.stdout)
+        self.check(expected + ' Minecraft status', expected in response['version']['name'])
+        return response
+
+    def rcon(self, root, text):
+        return self.cli(root, 'command', text, limit=90).stdout
+
+    def full(self, scenario):
+        before = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
+        (self.output / 'versions.env').write_text((ROOT / 'versions.env').read_text())
+        self.execute(ROOT, ['docker', 'version'], limit=30)
+        try:
+            if scenario == 'all':
+                paper, game_port = self.fresh('stable paper', '--profile', 'backup', '--profile', 'database', '--profile', 'web')
+                self.cli(paper, 'setup', '--accept-eula', '--bind', '127.0.0.1', '--port', game_port,
+                         '--web-port', json.loads((paper / '.state/settings.json').read_text())['web_port'],
+                         '--memory', '2G', '--motd', 'Validation proof', '--profile', 'backup', '--profile', 'database', '--profile', 'web', '--start')
+                response = self.status(paper, game_port, '26.2')
+                self.check('custom MOTD reached protocol', 'Validation proof' in str(response['description']))
+                identity = self.cli(paper, 'compose', 'logs', '--no-color', 'server').stdout
+                self.check('Paper exact build', '26.2-129' in identity)
+                checksum = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sha256sum', '/data/paper-26.2-129.jar').stdout
+                pins = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
+                self.check('Paper downloaded artifact checksum', pins['PAPER_SHA256'] in checksum)
+                self.cli(paper, 'compose', 'exec', '-T', 'server', 'java', '-version')
+                bad = self.cli(paper, 'compose', 'exec', '-T', 'server', 'rcon-cli', '--password', 'wrong', 'list', success=False)
+                self.check('wrong RCON password denied', bad.returncode != 0)
+                self.rcon(paper, 'scoreboard objectives add proof dummy')
+                self.rcon(paper, 'scoreboard players set Proof proof 42')
+                self.rcon(paper, 'save-all flush')
+                self.cli(paper, 'compose', 'up', '-d', '--force-recreate', '--no-deps', '--wait', '--wait-timeout', '600', 'server')
+                self.check('world survives container recreation', '42' in self.rcon(paper, 'scoreboard players get Proof proof'))
+                self.cli(paper, 'backup')
+                snapshots = self.cli(paper, 'snapshots').stdout
+                self.check('encrypted snapshot created', '"id"' in snapshots)
+                logs = self.cli(paper, 'compose', 'logs', '--no-color', 'server', 'backup').stdout
+                self.check('backup flushed world and resumed saves', 'Saving' in logs and ('Saving is now enabled' in logs or 'Automatic saving is now enabled' in logs))
+                self.check('scheduled backup interval active', 'sleeping 6h' in logs)
+                failed = self.cli(paper, 'compose', 'run', '--rm', '--no-deps', '-e', 'BACKUP_INTERVAL=0', '-e', 'INITIAL_DELAY=0', '-e', 'PRE_BACKUP_SCRIPT=exit 73', 'backup', success=False)
+                self.check('backup failure is reported', failed.returncode != 0)
+                self.check('backup failure resumes automatic saving', 'already' in self.rcon(paper, 'save-on').lower())
+                self.rcon(paper, 'scoreboard players set Proof proof 99')
+                restored = Path(self.temporary.name) / 'restored snapshot'
+                self.cli(paper, 'restore', restored)
+                restored_root, restored_port = self.fresh('restored server')
+                shutil.rmtree(restored_root / 'data/server')
+                shutil.copytree(restored / 'data', restored_root / 'data/server')
+                self.cli(restored_root, 'start')
+                self.status(restored_root, restored_port, '26.2')
+                self.check('restored server contains snapshot world', '42' in self.rcon(restored_root, 'scoreboard players get Proof proof'))
+                self.cli(restored_root, 'stop')
+                database = self.cli(paper, 'compose', 'exec', '-T', 'database', 'sh', '-c',
+                                    'mariadb -uminecraft -p"$(cat /run/secrets/database)" minecraft -e "CREATE TABLE proof (value INT); INSERT INTO proof VALUES (42); SELECT value FROM proof;"').stdout
+                self.check('database authenticates and round trips data', '42' in database)
+                self.cli(paper, 'compose', 'up', '-d', '--force-recreate', '--no-deps', '--wait', '--wait-timeout', '300', 'database')
+                database = self.cli(paper, 'compose', 'exec', '-T', 'database', 'sh', '-c',
+                                    'mariadb -uminecraft -p"$(cat /run/secrets/database)" minecraft -e "SELECT value FROM proof;"').stdout
+                self.check('database survives recreation', '42' in database)
+                wrong = self.cli(paper, 'compose', 'exec', '-T', 'database', 'mariadb', '-uminecraft', '-pwrong', 'minecraft', '-e', 'SELECT 1', success=False)
+                self.check('database wrong password denied', wrong.returncode != 0)
+                web_port = json.loads((paper / '.state/settings.json').read_text())['web_port']
+                web = self.execute(paper, ['python3', '-c', f'import urllib.request; print(urllib.request.urlopen("http://127.0.0.1:{web_port}").read().decode())'], limit=30)
+                self.check('optional web serves files', 'Minecraft files' in web.stdout)
+                self.cli(paper, 'stop')
+                vanilla, vanilla_port = self.fresh('latest vanilla', '--distribution', 'vanilla')
+                self.cli(vanilla, 'start')
+                self.status(vanilla, vanilla_port, '26.3')
+                self.check('Vanilla RCON works', 'players online' in self.rcon(vanilla, 'list'))
+                self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'java', '-version')
+                self.cli(vanilla, 'stop')
+            network, network_port = self.fresh('velocity network', '--network')
+            self.cli(network, 'start')
+            self.status(network, network_port, 'Velocity')
+            resolved = json.loads(self.cli(network, 'compose', 'config', '--format', 'json').stdout)
+            self.check('backend has no published port', not resolved['services']['server'].get('ports'))
+            self.check('production Velocity online authentication', 'online-mode = true' in (network / '.state/velocity.toml').read_text())
+            self.check('forwarding secret reaches effective Paper config', (network / '.state/secrets/forwarding').read_text().strip() in (network / 'data/server/config/paper-global.yml').read_text())
+            self.cli(network, 'compose', 'exec', '-T', 'proxy', 'java', '-version')
+            self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--expect', 'auth'], limit=40)
+            self.check('production proxy requires account authentication', True)
+            velocity = network / '.state/velocity.toml'
+            paper_config = network / 'configs/server/config/paper-global.yml'
+            production_velocity = velocity.read_text()
+            production_paper = paper_config.read_text()
+            try:
+                velocity.write_text(production_velocity.replace('online-mode = true', 'online-mode = false').replace('force-key-authentication = true', 'force-key-authentication = false'))
+                paper_config.write_text(production_paper.replace('online-mode: true', 'online-mode: false'))
+                self.cli(network, 'compose', 'up', '-d', '--force-recreate', '--wait', '--wait-timeout', '600')
+                login = self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--verify-cli', network / 'scripts/minecraft'], limit=40)
+                self.check('real client enters play through authenticated modern forwarding', 'ForwardProof' in login.stdout and '"play": true' in login.stdout)
+                server_id = self.cli(network, 'compose', 'ps', '-q', 'server').stdout.strip()
+                address = self.execute(network, ['docker', 'inspect', '--format', '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}', server_id], limit=30).stdout.strip()
+                denied = self.execute(network, ['python3', network / 'tests/login.py', '--host', address, '--port', '25565', '--expect', 'deny'], limit=40)
+                self.check('direct backend client denied without forwarding', '"denied": true' in denied.stdout)
+                paper_config.write_text(paper_config.read_text().replace((network / '.state/secrets/forwarding').read_text().strip(), '0' * 64))
+                self.cli(network, 'compose', 'up', '-d', '--force-recreate', '--no-deps', '--wait', '--wait-timeout', '600', 'server')
+                denied = self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--expect', 'deny'], limit=40)
+                self.check('wrong forwarding secret denies client login', '"denied": true' in denied.stdout)
+            finally:
+                velocity.write_text(production_velocity)
+                paper_config.write_text(production_paper)
+            self.cli(network, 'compose', 'up', '-d', '--force-recreate', '--wait', '--wait-timeout', '600')
+            self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--expect', 'auth'], limit=40)
+            self.check('production online authentication restored', True)
+            self.cli(network, 'stop')
+        finally:
+            cleanup_ok = True
+            for root in reversed(self.projects):
+                if (root / '.state/settings.json').exists():
+                    self.cli(root, 'compose', 'logs', '--no-color', limit=60, success=False)
+                    result = self.cli(root, 'compose', 'down', '--volumes', '--remove-orphans', '--timeout', '120', limit=240, success=False)
+                    cleanup_ok = cleanup_ok and result.returncode == 0
+            after = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
+            self.check('owned resources removed and unrelated container inventory preserved', cleanup_ok and set(after) == set(before))
+            if cleanup_ok:
+                self.temporary.cleanup()
+            else:
+                print('Cleanup incomplete; owned workspace: ' + self.temporary.name, file=sys.stderr)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Isolated public-boundary validation. Full Docker mode accepts the EULA only for disposable test servers.')
+    parser.add_argument('mode', choices=['static', 'local', 'fullDocker'])
+    parser.add_argument('--output', type=Path, default=ROOT / 'validation-output')
+    parser.add_argument('--scenario', choices=['all', 'network'], default='all')
+    args = parser.parse_args()
+    validation = Validation(args.output.resolve())
+    summary = {'started': datetime.now(timezone.utc).isoformat(), 'mode': args.mode, 'passed': False}
+    try:
+        validation.execute(ROOT, ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], limit=180)
+        if args.mode == 'fullDocker':
+            validation.full(args.scenario)
+        summary['passed'] = True
+    finally:
+        summary['finished'] = datetime.now(timezone.utc).isoformat()
+        (validation.output / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+
+
+if __name__ == '__main__':
+    def interrupted(signum, frame):
+        raise KeyboardInterrupt('Validation interrupted; tearing down owned projects.')
+    signal.signal(signal.SIGTERM, interrupted)
+    main()
