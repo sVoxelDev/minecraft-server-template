@@ -1,0 +1,18 @@
+{
+  "validated_archive_commit": "b2055ce",
+  "first_successful_archive_commit": "34c2ed",
+  "source_sha256": {
+    "compose.yaml": "a010a1d910d7c4faa48c3c78cfb6ad67d92449498b748c59df3729652d483a25",
+    "Dockerfile.backup": "1c6ea31fbca38c60cb9ab8480bb76128c6c3a4f31ca904084d400d285dc7be2d",
+    "Dockerfile.backup.dockerignore": "e0a0a575a7f69451eab7e5c28bfabd98bb15b7e6b86051d7f3c994480e830027",
+    "versions.env": "73dbd2e5b0813991ba35171e6899630da3f94774b0e1b5f6c59e48c2d70edcfc",
+    "scripts/check-versions": "1b17bea02f5b24b8b5959f0d3425284412ee02965ce2d887732b42887fb4e42a",
+    "scripts/status": "a326245845b7fa44831e4eb0e126614cb4a2d16aeec8d75b26ac5f526b35bcbd",
+    "scripts/validate": "dd53cc621aeef73da805651ebd28e4c4af2f421277fa7a4ef825aa700757d8aa",
+    "scripts/minecraft": "3c8df527f3775fbd21ad0c438ad6b6ef66436493bc799622eb72eb0c4b5757b5",
+    "tests/login.py": "e92d086ab9e6284cae1147df0d04baba6bdbc93cb27ea4fc3a4e60acdc088004",
+    "tests/test_cli.py": "b5511afe70d59edb0ffb96b1aa85fbcd435f362983a15ce2bef90a16c3292333"
+  },
+  "archive_source": "git archive HEAD; no Git index",
+  "additional_build_input": "Dockerfile.backup.dockerignore restricts the derived-image build context; GitHub runtime verifies this final input."
+}
