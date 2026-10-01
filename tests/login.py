@@ -54,8 +54,11 @@ def decode_varint(data):
 
 
 def login(args):
+    supported = {'26.2': 776}
+    if args.version not in supported:
+        raise ValueError('Unsupported validation client protocol for Minecraft ' + args.version + '. Update the client packet mapping before validating this version.')
     client = Client(args.host, args.port)
-    client.send(0, protocol.varint(776) + string(args.host) + struct.pack('>H', args.port) + b'\x02')
+    client.send(0, protocol.varint(supported[args.version]) + string(args.host) + struct.pack('>H', args.port) + b'\x02')
     identity = bytearray(hashlib.md5(('OfflinePlayer:' + args.username).encode()).digest())
     identity[6] = (identity[6] & 15) | 48
     identity[8] = (identity[8] & 63) | 128
@@ -112,6 +115,7 @@ def login(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Minimal 26.2 validation client. No account login or gameplay automation.')
+    parser.add_argument('--version', default=dict(line.split('=', 1) for line in (Path(__file__).resolve().parents[1] / 'versions.env').read_text().splitlines() if line)['PAPER_VERSION'])
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', type=int, required=True)
     parser.add_argument('--username', default='ForwardProof')

@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -9,13 +10,22 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def copy_template(destination):
-    files = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=ROOT, text=True)
-    for name in set(files.splitlines()):
+    result = subprocess.run(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=ROOT, text=True, capture_output=True)
+    if result.returncode == 0:
+        files = set(result.stdout.splitlines())
+    else:
+        excluded = {'.git', '.state', 'data', 'backups', 'validation-output', '__pycache__', 'node_modules',
+                    'servers', 'minimal', 'worlds', 'database', 'rcon', 'backup', 'schematics', 'downloads', 'files'}
+        files = {str(path.relative_to(ROOT)) for path in ROOT.rglob('*') if path.is_file() and
+                 not excluded.intersection(path.relative_to(ROOT).parts) and not path.name.endswith(('.secrets.env', '.jar')) and
+                 path.name != 'ports.env'}
+    for name in files:
         source = ROOT / name
-        if source.is_file() and not name.startswith(('validation-output/', 'docs/proof/')):
+        if source.is_file() and not name.startswith(('validation-output/', 'docs/proof/', 'configs/server/', 'plugins/server/', 'plugins/proxy/', 'web/')):
             target = destination / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
+
 
 
 class SetupBoundary(unittest.TestCase):
@@ -77,6 +87,40 @@ class SetupBoundary(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('authentication contradicts', result.stderr)
 
+    def test_ambient_environment_cannot_redirect_project_or_pins(self):
+        self.assertEqual(self.invoke('setup', '--accept-eula', '--profile', 'backup', '--profile', 'database', '--profile', 'web', '--network').returncode, 0)
+        managed = dict(line.split('=', 1) for line in (self.root / '.state/settings.env').read_text().splitlines())
+        managed.update(dict(line.split('=', 1) for line in (self.root / 'versions.env').read_text().splitlines() if line))
+        environment = dict(os.environ, **{key: 'untrusted:latest' for key in managed})
+        environment['COMPOSE_PROJECT_NAME'] = 'unrelated-production-proof'
+        result = subprocess.run([str(self.cli), 'compose', 'config', '--format', 'json'], env=environment, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        config = json.loads(result.stdout)
+        self.assertEqual(config['name'], managed['COMPOSE_PROJECT_NAME'].strip("'"))
+        self.assertNotIn('untrusted', str(config))
+        self.assertEqual(config['services']['server']['environment']['VERSION'], managed['PAPER_VERSION'])
+        (self.root / '.state/compose.yaml').write_text(json.dumps({'services': {'server': {'image': 'untrusted:latest'}}}))
+        invalid = self.invoke('doctor')
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertIn('images contradict', invalid.stderr)
+
+    def test_doctor_rejects_network_bypasses(self):
+        self.assertEqual(self.invoke('setup', '--accept-eula', '--network', '--profile', 'database').returncode, 0)
+        for service, mode in [('server', 'host'), ('database', 'host'), ('server', 'container:foreign')]:
+            (self.root / '.state/compose.yaml').write_text(json.dumps({'services': {service: {'network_mode': mode}}}))
+            result = self.invoke('doctor')
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertIn('network', result.stderr.lower())
+
+    def test_literal_motd_survives_setup_and_compose(self):
+        motd = "Unicode ☃ $HOME ${SERVER_IMAGE} backslash \\" + "' quote \\\\ tail"
+        self.assertEqual(self.invoke('setup', '--accept-eula', '--network', '--motd', motd).returncode, 0)
+        result = self.invoke('compose', 'config', '--format', 'json')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['services']['server']['environment']['MOTD'].replace('$$', '$'), motd)
+        import tomllib
+        self.assertEqual(tomllib.loads((self.root / '.state/velocity.toml').read_text())['motd'], motd)
+
     def test_legacy_deployment_is_refused(self):
         (self.root / 'servers/main').mkdir(parents=True)
         self.assertNotEqual(self.invoke('setup', '--accept-eula').returncode, 0)
@@ -97,7 +141,8 @@ class SetupBoundary(unittest.TestCase):
                 server = config['services']['server']
                 self.assertEqual(server['environment']['ONLINE_MODE'], 'false' if '--network' in options else 'true')
                 self.assertEqual(server['environment']['ENABLE_QUERY'], 'false')
-                self.assertEqual(server['environment']['VERSION'], '26.3' if 'vanilla' in options else '26.2')
+                pins = dict(line.split('=', 1) for line in (target / 'versions.env').read_text().splitlines() if line)
+                self.assertEqual(server['environment']['VERSION'], pins['VANILLA_VERSION' if 'vanilla' in options else 'PAPER_VERSION'])
                 self.assertNotIn('/var/run/docker.sock', str(config))
                 if '--network' in options:
                     self.assertFalse(server.get('ports'))
@@ -107,7 +152,8 @@ class SetupBoundary(unittest.TestCase):
                 secrets = [path.read_text().strip() for path in (target / '.state/secrets').iterdir()]
                 ignored = subprocess.run(['git', 'check-ignore', '--no-index', '.state/secrets/rcon'], cwd=ROOT,
                                          capture_output=True, text=True)
-                self.assertEqual(ignored.returncode, 0)
+                if (ROOT / '.git').exists():
+                    self.assertEqual(ignored.returncode, 0)
                 for secret in secrets:
                     self.assertNotIn(secret, setup.stdout + setup.stderr)
 

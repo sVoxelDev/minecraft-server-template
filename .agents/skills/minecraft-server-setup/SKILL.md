@@ -9,7 +9,7 @@ Read the root README for commands and distribution choices. Use the repository's
 
 Check for `.state/settings.json`, legacy deployment paths, or existing world data first. Existing deployments need [the migration guide](../../../docs/migration.md) and a backup/restore rehearsal. Preserve their data and credentials.
 
-Python 3.10+, Docker Engine 28+, Compose plugin v2 or v5, sufficient memory and disk, and Docker access must already exist. Inspect prerequisites; report the missing prerequisite if unavailable. Host package installation, firewall/DNS changes, and unrelated Docker resources are outside this setup skill.
+Python 3.11+, Docker Engine 28+, Compose plugin v2 or v5, sufficient memory and disk, and Docker access must already exist. Inspect prerequisites; report the missing prerequisite if unavailable. Host package installation, firewall/DNS changes, and unrelated Docker resources are outside this setup skill.
 
 Obtain explicit EULA acceptance from the user's request before passing `--accept-eula`. Acceptance for an isolated validation run applies only to its disposable test servers. An absent response is not consent. [START.md](../../../START.md) supplies a reusable request with explicit acceptance.
 

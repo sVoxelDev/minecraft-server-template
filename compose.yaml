@@ -68,7 +68,12 @@ services:
     stop_grace_period: 30s
   backup:
     profiles: [backup]
-    image: ${BACKUP_IMAGE:?}
+    image: ${BACKUP_RUNTIME_IMAGE:?}
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+      args:
+        BACKUP_IMAGE: ${BACKUP_IMAGE:?}
     user: ${RUN_UID:?}:${RUN_GID:?}
     restart: unless-stopped
     security_opt: [no-new-privileges:true]

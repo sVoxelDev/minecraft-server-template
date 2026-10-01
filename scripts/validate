@@ -2,6 +2,8 @@
 import argparse
 from datetime import datetime, timezone
 import json
+import os
+import secrets
 from pathlib import Path
 import shutil
 import signal
@@ -12,6 +14,8 @@ import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parent.parent
+PINS = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
+MOTD = "Unicode ☃ $HOME ${SERVER_IMAGE} backslash \\' quote \\\\ tail"
 sys.path.insert(0, str(ROOT / 'tests'))
 from test_cli import copy_template
 
@@ -44,8 +48,12 @@ class Validation:
     def execute(self, root, args, limit=720, success=True):
         command = ['timeout', '--signal=TERM', '--kill-after=30s', str(limit), *map(str, args)]
         started = datetime.now(timezone.utc).isoformat()
+        environment = dict(os.environ)
+        if hasattr(self, 'sentinel_project') and args and str(args[0]).endswith('/scripts/minecraft'):
+            environment.update(COMPOSE_PROJECT_NAME=self.sentinel_project, SERVER_IMAGE='untrusted:latest',
+                               BACKUP_IMAGE='untrusted:latest', GAME_PORT='1', PAPER_VERSION='0', COMPOSE_PROFILES='')
         result = subprocess.run(command, cwd=root, stdin=subprocess.DEVNULL, text=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=limit + 45)
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=limit + 45, env=environment)
         event = {'timestamp': started, 'cwd': str(root), 'command': command, 'exit': result.returncode,
                  'output': self.redact(result.stdout)}
         with (self.output / 'commands.jsonl').open('a') as log:
@@ -76,7 +84,7 @@ class Validation:
         self.projects.append(root)
         game_port = port()
         self.cli(root, 'setup', '--accept-eula', '--bind', '127.0.0.1', '--port', game_port,
-                 '--web-port', port(), '--memory', '2G', '--motd', 'Validation proof', *options)
+                 '--web-port', port(), '--memory', '2G', '--motd', MOTD, *options)
         return root, game_port
 
     def status(self, root, game_port, expected):
@@ -88,21 +96,87 @@ class Validation:
     def rcon(self, root, text):
         return self.cli(root, 'command', text, limit=90).stdout
 
+    def restic_failure(self, root):
+        path = root / '.state/compose.yaml'
+        original = path.read_text()
+        overlay = json.loads(original)
+        overlay['services']['backup'] = {'environment': {'RESTIC_LIMIT_UPLOAD': 'invalid-proof'}}
+        try:
+            path.write_text(json.dumps(overlay))
+            failed = self.cli(root, 'backup', success=False)
+            self.check('inner Restic failure returns nonzero with useful output', failed.returncode != 0 and
+                       'invalid-proof' in failed.stdout and 'Backup failed' in failed.stdout)
+            self.check('inner Restic failure resumes saves', 'already' in self.rcon(root, 'save-on').lower())
+        finally:
+            path.write_text(original)
+
+    def overlapping_backups(self, root):
+        processes = []
+        logs = []
+        release = root / 'backups/release-first'
+        locked = root / 'backups/first-locked'
+        def launch(name, hook=None):
+            args = [str(root / 'scripts/minecraft'), 'compose', 'run', '--rm', '--no-deps', '-e', 'BACKUP_INTERVAL=0',
+                    '-e', 'INITIAL_DELAY=0', '-e', 'BACKUP_ON_STARTUP=true']
+            if hook:
+                args += ['-e', 'PRE_BACKUP_SCRIPT=' + hook]
+            args += ['backup']
+            output = self.output / (name + '.log')
+            handle = output.open('w')
+            process = subprocess.Popen(['timeout', '150', *args], cwd=root, stdout=handle, stderr=subprocess.STDOUT)
+            processes.append((process, handle, args, output))
+            return output
+        try:
+            launch('overlap-first', "touch /backups/first-locked; timeout 60 sh -c 'until test -f /backups/release-first; do sleep 0.2; done'")
+            deadline = time.monotonic() + 30
+            while not locked.exists() and time.monotonic() < deadline:
+                time.sleep(0.1)
+            self.check('first backup holds lock after flush', locked.exists())
+            second = launch('overlap-second')
+            deadline = time.monotonic() + 30
+            while 'Command executed successfully rcon-cli list' not in second.read_text() and time.monotonic() < deadline:
+                time.sleep(0.1)
+            self.check('second backup completed nonmutating readiness while first locked', 'Command executed successfully rcon-cli list' in second.read_text())
+            self.check('overlap cannot enable saving while first holds lock', 'already' in self.rcon(root, 'save-off').lower())
+            release.touch()
+            for process, handle, args, output in processes:
+                code = process.wait(timeout=160)
+                handle.close()
+                text = self.redact(output.read_text())
+                output.write_text(text)
+                with (self.output / 'commands.jsonl').open('a') as log:
+                    log.write(json.dumps({'timestamp': datetime.now(timezone.utc).isoformat(), 'cwd': str(root),
+                                          'command': args, 'exit': code, 'output': text}) + '\n')
+                self.check(output.stem + ' succeeded', code == 0 and 'Backup failed' not in text and 'snapshot' in text)
+            self.check('both overlapping backups resume saves', 'already' in self.rcon(root, 'save-on').lower())
+        finally:
+            release.touch()
+            for process, handle, args, output in processes:
+                if process.poll() is None:
+                    process.wait(timeout=160)
+                handle.close()
+                output.write_text(self.redact(output.read_text()))
+            release.unlink(missing_ok=True)
+            locked.unlink(missing_ok=True)
+
     def full(self, scenario):
         before = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
         (self.output / 'versions.env').write_text((ROOT / 'versions.env').read_text())
         self.execute(ROOT, ['docker', 'version'], limit=30)
+        self.sentinel_project = 'minecraft-sentinel-' + secrets.token_hex(8)
+        sentinel = self.execute(ROOT, ['docker', 'create', '--label', 'com.docker.compose.project=' + self.sentinel_project,
+                               '--name', self.sentinel_project, PINS['WEB_IMAGE']], limit=60).stdout.strip()
         try:
             if scenario == 'all':
                 paper, game_port = self.fresh('stable paper', '--profile', 'backup', '--profile', 'database', '--profile', 'web')
                 self.cli(paper, 'setup', '--accept-eula', '--bind', '127.0.0.1', '--port', game_port,
                          '--web-port', json.loads((paper / '.state/settings.json').read_text())['web_port'],
-                         '--memory', '2G', '--motd', 'Validation proof', '--profile', 'backup', '--profile', 'database', '--profile', 'web', '--start')
-                response = self.status(paper, game_port, '26.2')
-                self.check('custom MOTD reached protocol', 'Validation proof' in str(response['description']))
+                         '--memory', '2G', '--motd', MOTD, '--profile', 'backup', '--profile', 'database', '--profile', 'web', '--start')
+                response = self.status(paper, game_port, PINS['PAPER_VERSION'])
+                self.check('custom MOTD reached protocol', MOTD == (response['description'].get('text') if isinstance(response['description'], dict) else response['description']))
                 identity = self.cli(paper, 'compose', 'logs', '--no-color', 'server').stdout
-                self.check('Paper exact build', '26.2-129' in identity)
-                checksum = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sha256sum', '/data/paper-26.2-129.jar').stdout
+                self.check('Paper exact build', PINS['PAPER_VERSION'] + '-' + PINS['PAPER_BUILD'] in identity)
+                checksum = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sha256sum', '/data/paper-' + PINS['PAPER_VERSION'] + '-' + PINS['PAPER_BUILD'] + '.jar').stdout
                 pins = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
                 self.check('Paper downloaded artifact checksum', pins['PAPER_SHA256'] in checksum)
                 properties = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'grep -E "^(online-mode|enable-query)=" /data/server.properties').stdout
@@ -126,6 +200,8 @@ class Validation:
                 failed = self.cli(paper, 'compose', 'run', '--rm', '--no-deps', '-e', 'BACKUP_INTERVAL=0', '-e', 'INITIAL_DELAY=0', '-e', 'PRE_BACKUP_SCRIPT=exit 73', 'backup', success=False)
                 self.check('backup failure is reported', failed.returncode != 0)
                 self.check('backup failure resumes automatic saving', 'already' in self.rcon(paper, 'save-on').lower())
+                self.restic_failure(paper)
+                self.overlapping_backups(paper)
                 self.rcon(paper, 'scoreboard players set Proof proof 99')
                 restored = Path(self.temporary.name) / 'restored snapshot'
                 self.cli(paper, 'restore', restored)
@@ -133,7 +209,7 @@ class Validation:
                 shutil.rmtree(restored_root / 'data/server')
                 shutil.copytree(restored / 'data', restored_root / 'data/server')
                 self.cli(restored_root, 'start')
-                self.status(restored_root, restored_port, '26.2')
+                self.status(restored_root, restored_port, PINS['PAPER_VERSION'])
                 self.check('restored server contains snapshot world', '42' in self.rcon(restored_root, 'scoreboard players get Proof proof'))
                 self.cli(restored_root, 'stop')
                 database = self.cli(paper, 'compose', 'exec', '-T', 'database', 'sh', '-c',
@@ -151,7 +227,7 @@ class Validation:
                 self.cli(paper, 'stop')
                 vanilla, vanilla_port = self.fresh('latest vanilla', '--distribution', 'vanilla')
                 self.cli(vanilla, 'start')
-                self.status(vanilla, vanilla_port, '26.3')
+                self.status(vanilla, vanilla_port, PINS['VANILLA_VERSION'])
                 self.check('Vanilla RCON works', 'players online' in self.rcon(vanilla, 'list'))
                 checksum = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', r'find /data -maxdepth 1 -name "*.jar" -exec sha1sum {} \;').stdout
                 self.check('Vanilla downloaded artifact checksum', pins['VANILLA_SERVER_SHA1'] in checksum)
@@ -161,14 +237,15 @@ class Validation:
                 self.cli(vanilla, 'stop')
             network, network_port = self.fresh('velocity network', '--network')
             self.cli(network, 'start')
-            self.status(network, network_port, 'Velocity')
+            response = self.status(network, network_port, 'Velocity')
+            self.check('literal Velocity MOTD reached protocol', MOTD == (response['description'].get('text') if isinstance(response['description'], dict) else response['description']))
             resolved = json.loads(self.cli(network, 'compose', 'config', '--format', 'json').stdout)
             self.check('backend has no published port', not resolved['services']['server'].get('ports'))
             self.check('production Velocity online authentication', 'online-mode = true' in (network / '.state/velocity.toml').read_text())
             self.check('forwarding secret reaches effective Paper config', (network / '.state/secrets/forwarding').read_text().strip() in (network / 'data/server/config/paper-global.yml').read_text())
             self.cli(network, 'compose', 'exec', '-T', 'proxy', 'java', '-version')
             pins = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
-            checksum = self.cli(network, 'compose', 'exec', '-T', 'proxy', 'sha256sum', '/server/velocity-4.2.1-SNAPSHOT-36.jar').stdout
+            checksum = self.cli(network, 'compose', 'exec', '-T', 'proxy', 'sha256sum', '/server/velocity-' + PINS['VELOCITY_VERSION'] + '-' + PINS['VELOCITY_BUILD_ID'] + '.jar').stdout
             self.check('Velocity downloaded artifact checksum', pins['VELOCITY_SHA256'] in checksum)
             self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--expect', 'auth'], limit=40)
             self.check('production proxy requires account authentication', True)
@@ -207,6 +284,9 @@ class Validation:
                         self.cli(root, 'compose', 'logs', '--no-color', limit=60, success=False)
                     result = self.cli(root, 'compose', 'down', '--volumes', '--remove-orphans', '--timeout', '120', limit=240, success=False)
                     cleanup_ok = cleanup_ok and result.returncode == 0
+            sentinel_alive = self.execute(ROOT, ['docker', 'inspect', '--format', '{{.Id}}', sentinel], limit=30, success=False)
+            self.execute(ROOT, ['docker', 'rm', sentinel], limit=30)
+            self.check('unrelated stable sentinel survives contaminated cleanup', sentinel_alive.returncode == 0 and sentinel in sentinel_alive.stdout)
             after = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
             (self.output / 'inventory-diff.json').write_text(json.dumps({'removed_unrelated_ids': sorted(set(before) - set(after)), 'added_unrelated_ids': sorted(set(after) - set(before)), 'preserved_ids': sorted(set(before) & set(after))}, indent=2) + '\n')
             remaining = []

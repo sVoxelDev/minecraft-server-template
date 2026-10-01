@@ -4,7 +4,7 @@ Run a reproducible Java Edition server with Docker Compose. The default is stabl
 
 ## Start a server
 
-You need Python 3.10+, Docker Engine 28+, the `docker compose` plugin v2 or v5, and at least 4 GiB available memory. Linux amd64 and arm64 images are pinned. Setup uses your host UID and GID for Minecraft and backups; use an ordinary user with Docker access. The optional database and web images use their publisher's initialization defaults.
+You need Python 3.11+, Docker Engine 28+, the `docker compose` plugin v2 or v5, and at least 4 GiB available memory. Linux amd64 and arm64 images are pinned. Setup uses your host UID and GID for Minecraft and backups; use an ordinary user with Docker access. The optional database and web images use their publisher's initialization defaults.
 
 Read the [Minecraft EULA](https://aka.ms/MinecraftEULA). The flag below records your explicit acceptance.
 

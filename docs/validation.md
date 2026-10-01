@@ -22,7 +22,7 @@ Both Java wrappers actually reported Temurin 25.0.4+7. Restic snapshots reported
 
 ## Reproduce
 
-Run from a fresh checkout with Python 3.10+, Git, native Linux Docker Engine 28+, Compose v2/v5, GNU `timeout`, sufficient memory and disk, and network access to the publishers:
+Run from a fresh checkout with Python 3.11+, Git, native Linux Docker Engine 28+, Compose v2/v5, GNU `timeout`, sufficient memory and disk, and network access to the publishers:
 
 ```sh
 ./scripts/validate local --output /tmp/minecraft-local-proof

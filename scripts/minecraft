@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import ipaddress
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -17,9 +18,10 @@ def emit(value):
     print(json.dumps(value, sort_keys=True))
 
 
-def run(args, timeout=600, capture=False):
+def run(args, timeout=600, capture=False, env=None):
     return subprocess.run(args, cwd=ROOT, check=True, text=True, timeout=timeout,
-                          stdout=subprocess.PIPE if capture else None)
+                          stdout=subprocess.PIPE if capture else None,
+                          stderr=subprocess.STDOUT if capture else None, env=env)
 
 
 def pins():
@@ -39,11 +41,43 @@ def settings():
     return config
 
 
-def compose(*args, timeout=600, capture=False):
+def backup_image():
+    patch = hashlib.sha256((ROOT / 'Dockerfile.backup').read_bytes()).hexdigest()[:12]
+    return 'minecraft-template-backup:' + pins()['BACKUP_IMAGE'].split('sha256:')[1][:16] + '-' + patch
+
+
+def deployment():
     settings()
-    return run(['docker', 'compose', '--project-directory', str(ROOT), '--env-file', str(ROOT / 'versions.env'),
-                '--env-file', str(STATE / 'settings.env'), '-f', str(ROOT / 'compose.yaml'),
-                '-f', str(STATE / 'compose.yaml'), *args], timeout, capture)
+    values = dict(line.split('=', 1) for line in (STATE / 'settings.env').read_text().splitlines() if line)
+    project = values['COMPOSE_PROJECT_NAME'].strip("'")
+    if not re.fullmatch(r'minecraft-[a-f0-9]{8}', project):
+        raise ValueError('Invalid generated deployment project identity.')
+    managed = set(values) | set(pins())
+    environment = {key: value for key, value in os.environ.items() if key not in managed and not key.startswith('COMPOSE_')}
+    environment['MOTD'] = settings()['motd']
+    environment['BACKUP_RUNTIME_IMAGE'] = backup_image()
+    command = ['docker', 'compose', '--project-name', project, '--project-directory', str(ROOT),
+               '--env-file', str(ROOT / 'versions.env'), '--env-file', str(STATE / 'settings.env'),
+               '-f', str(ROOT / 'compose.yaml'), '-f', str(STATE / 'compose.yaml')]
+    resolved = json.loads(run([*command, '--profile', '*', 'config', '--format', 'json'], 30, True, environment).stdout)
+    expected = {name: pins()[key] for name, key in [('server', 'SERVER_IMAGE'), ('proxy', 'PROXY_IMAGE'),
+                ('database', 'DATABASE_IMAGE'), ('web', 'WEB_IMAGE')]}
+    expected['backup'] = backup_image()
+    if resolved.get('name') != project or any(service.get('image') != expected.get(name)
+                                             for name, service in resolved['services'].items()):
+        raise ValueError('Effective project or service images contradict managed deployment identity/pins.')
+    backup = resolved['services']['backup']
+    if backup.get('build', {}).get('args', {}).get('BACKUP_IMAGE') != pins()['BACKUP_IMAGE']:
+        raise ValueError('Backup base image contradicts managed pin.')
+    return command, environment, resolved
+
+
+def compose(*args, timeout=600, capture=False):
+    if any(arg in ['--project-name', '-p', '--project-directory', '--env-file', '--file', '-f', '--profile'] or
+           arg.startswith(('--project-name=', '--project-directory=', '--env-file=', '--file=', '--profile=')) for arg in args):
+        raise ValueError('Compose deployment identity, inputs and profiles are managed by setup.')
+    command, environment, _ = deployment()
+    return run([*command, *args], timeout, capture, environment)
 
 
 def setup(args):
@@ -103,11 +137,12 @@ def setup(args):
            'DISTRIBUTION': args.distribution.upper(),
            'MEMORY': args.memory, 'CONTAINER_MEMORY': str(mb + 1024) + 'M',
            'ONLINE_MODE': str(not args.network).lower(), 'GAME_PORT': str(args.port),
-           'BIND_ADDRESS': binding, 'WEB_PORT': str(args.web_port), 'MOTD': args.motd}
+           'BIND_ADDRESS': binding, 'WEB_PORT': str(args.web_port),
+           'BACKUP_RUNTIME_IMAGE': backup_image()}
     (STATE / 'settings.env').write_text(''.join(key + '=' + "'" + value.replace("'", "\\'") + "'\n" for key, value in env.items()))
-    overlay = {'services': {'server': {}}}
+    overlay = {'services': {'server': {'environment': {}}}}
     if args.distribution == 'vanilla':
-        overlay['services']['server']['environment'] = {'VERSION': '${VANILLA_VERSION:?}'}
+        overlay['services']['server']['environment']['VERSION'] = '${VANILLA_VERSION:?}'
     if not args.network:
         overlay['services']['server']['ports'] = [f'{binding}:{args.port}:25565']
     (STATE / 'compose.yaml').write_text(json.dumps(overlay))
@@ -122,7 +157,7 @@ def setup(args):
         (ROOT / 'configs/server/spigot.yml').write_text('settings:\n  bungeecord: false\n')
     (STATE / 'velocity.toml').write_text('''config-version = "2.7"
 bind = "0.0.0.0:25565"
-motd = "Minecraft Velocity network"
+motd = MOTD_LITERAL
 show-max-players = 20
 online-mode = true
 force-key-authentication = true
@@ -135,14 +170,21 @@ try = ["main"]
 "localhost" = ["main"]
 [advanced]
 accepts-transfers = false
-''')
+'''.replace('MOTD_LITERAL', json.dumps(args.motd, ensure_ascii=False)))
     (STATE / 'settings.json').write_text(json.dumps(config, indent=2) + '\n')
     settings()
     emit({'setup': 'created', 'distribution': args.distribution, 'network': args.network, 'profiles': profiles})
 
 
 def validate_security(config):
-    resolved = json.loads(compose('config', '--format', 'json', timeout=30, capture=True).stdout)
+    resolved = deployment()[2]
+    for name, service in resolved['services'].items():
+        if service.get('network_mode') or service.get('privileged') or service.get('ports') and name not in ['server', 'proxy', 'web']:
+            raise ValueError('Unsafe network or privilege bypass for ' + name)
+        for network in service.get('networks', {}):
+            definition = resolved.get('networks', {}).get(network, {})
+            if definition.get('external') or definition.get('driver', 'bridge') != 'bridge':
+                raise ValueError('Only project-owned bridge networks are supported.')
     server = resolved['services']['server']
     expected_online = str(not config['network']).lower()
     if server['environment']['ONLINE_MODE'].lower() != expected_online:
@@ -245,8 +287,11 @@ def main():
     elif args.command == 'backup':
         result = compose('run', '--rm', '--no-deps', '-e', 'BACKUP_INTERVAL=0', '-e', 'INITIAL_DELAY=0',
                          '-e', 'BACKUP_ON_STARTUP=true', 'backup', capture=True)
-        print(result.stdout, end='')
-        if 'Backup failed' in result.stdout:
+        output = result.stdout
+        for path in (STATE / 'secrets').iterdir():
+            output = output.replace(path.read_text().strip(), '[REDACTED]')
+        print(output, end='')
+        if re.search(r'Backup failed|ERROR|Fatal:', result.stdout):
             raise ValueError('Backup reported an error; inspect service logs.')
     elif args.command == 'snapshots':
         compose('run', '--rm', '--no-deps', '--entrypoint', 'restic', 'backup', 'snapshots', '--json')
