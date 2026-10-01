@@ -105,6 +105,10 @@ class Validation:
                 checksum = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sha256sum', '/data/paper-26.2-129.jar').stdout
                 pins = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
                 self.check('Paper downloaded artifact checksum', pins['PAPER_SHA256'] in checksum)
+                properties = self.cli(paper, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'grep -E "^(online-mode|enable-query)=" /data/server.properties').stdout
+                self.check('effective standalone authentication and query settings', 'online-mode=true' in properties and 'enable-query=false' in properties)
+                self.execute(paper, ['python3', paper / 'tests/login.py', '--port', game_port, '--expect', 'auth'], limit=40)
+                self.check('standalone requires account authentication', True)
                 self.cli(paper, 'compose', 'exec', '-T', 'server', 'java', '-version')
                 bad = self.cli(paper, 'compose', 'exec', '-T', 'server', 'rcon-cli', '--password', 'wrong', 'list', success=False)
                 self.check('wrong RCON password denied', bad.returncode != 0)
@@ -149,6 +153,10 @@ class Validation:
                 self.cli(vanilla, 'start')
                 self.status(vanilla, vanilla_port, '26.3')
                 self.check('Vanilla RCON works', 'players online' in self.rcon(vanilla, 'list'))
+                checksum = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'find /data -maxdepth 1 -name "*.jar" -exec sha1sum {} \;').stdout
+                self.check('Vanilla downloaded artifact checksum', pins['VANILLA_SERVER_SHA1'] in checksum)
+                properties = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'grep -E "^(online-mode|enable-query)=" /data/server.properties').stdout
+                self.check('effective Vanilla authentication and query settings', 'online-mode=true' in properties and 'enable-query=false' in properties)
                 self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'java', '-version')
                 self.cli(vanilla, 'stop')
             network, network_port = self.fresh('velocity network', '--network')
@@ -159,6 +167,9 @@ class Validation:
             self.check('production Velocity online authentication', 'online-mode = true' in (network / '.state/velocity.toml').read_text())
             self.check('forwarding secret reaches effective Paper config', (network / '.state/secrets/forwarding').read_text().strip() in (network / 'data/server/config/paper-global.yml').read_text())
             self.cli(network, 'compose', 'exec', '-T', 'proxy', 'java', '-version')
+            pins = dict(line.split('=', 1) for line in (ROOT / 'versions.env').read_text().splitlines() if line)
+            checksum = self.cli(network, 'compose', 'exec', '-T', 'proxy', 'sha256sum', '/server/velocity-4.2.1-SNAPSHOT-36.jar').stdout
+            self.check('Velocity downloaded artifact checksum', pins['VELOCITY_SHA256'] in checksum)
             self.execute(network, ['python3', network / 'tests/login.py', '--port', network_port, '--expect', 'auth'], limit=40)
             self.check('production proxy requires account authentication', True)
             velocity = network / '.state/velocity.toml'
