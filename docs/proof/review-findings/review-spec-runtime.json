@@ -1,0 +1,105 @@
+[
+  {
+    "args": [
+      "setup",
+      "--accept-eula",
+      "--bind",
+      "127.0.0.1",
+      "--port",
+      "60711",
+      "--start",
+      "--wait",
+      "120"
+    ],
+    "exit": 0,
+    "stdout": "There are 0 of a max of 20 players online: \n{\"distribution\": \"paper\", \"network\": false, \"profiles\": [], \"setup\": \"created\"}\n{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n{\"ready\": true}\n",
+    "stderr": " Network minecraft-57df2bbc_default Creating \n Network minecraft-57df2bbc_default Creating \n Network minecraft-57df2bbc_default Created \n Network minecraft-57df2bbc_default Created \n Container minecraft-57df2bbc-server-1 Creating \n Container minecraft-57df2bbc-server-1 Created \n Container minecraft-57df2bbc-server-1 Starting \n Container minecraft-57df2bbc-server-1 Started \n Container minecraft-57df2bbc-server-1 Waiting \n Container minecraft-57df2bbc-server-1 Healthy \n"
+  },
+  {
+    "args": [
+      "compose",
+      "up",
+      "-d",
+      "--force-recreate",
+      "--no-deps",
+      "--wait",
+      "--wait-timeout",
+      "120",
+      "server"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": " Container minecraft-57df2bbc-server-1 Recreate \n Container minecraft-57df2bbc-server-1 Recreated \n Container minecraft-57df2bbc-server-1 Starting \n Container minecraft-57df2bbc-server-1 Started \n Container minecraft-57df2bbc-server-1 Waiting \n Container minecraft-57df2bbc-server-1 Healthy \n"
+  },
+  {
+    "args": [
+      "compose",
+      "exec",
+      "-T",
+      "server",
+      "cat",
+      "/data/review-spec.txt",
+      "/data/plugins/ReviewSpec/config.yml"
+    ],
+    "exit": 0,
+    "stdout": "custom server input\nreview: custom-plugin-input\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "backup"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": " Container minecraft-57df2bbc-backup-run-e23e9e33ee0e Creating \n Container minecraft-57df2bbc-backup-run-e23e9e33ee0e Created \ntime=\"2026-10-01T07:05:52Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:05:52+0000 INFO Initializing new restic repository...\n2026-10-01T07:05:55+0000 INFO created restic repository c1e70cf921 at /backups/repository\n2026-10-01T07:05:55+0000 INFO \n2026-10-01T07:05:55+0000 INFO Please note that knowledge of your password is required to access\n2026-10-01T07:05:55+0000 INFO the repository. Losing your password means that your data is\n2026-10-01T07:05:55+0000 INFO irrecoverably lost.\n2026-10-01T07:05:55+0000 INFO waiting initial delay of 0...\n2026-10-01T07:05:55+0000 INFO waiting for rcon readiness...\n2026-10-01T07:05:55+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:05:55+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:05:55+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:05:55+0000 INFO Command executed successfully sync\n2026-10-01T07:05:55+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:05:56+0000 INFO no parent snapshot found, will read all files\n2026-10-01T07:05:56+0000 INFO \n2026-10-01T07:05:56+0000 INFO Files:         184 new,     0 changed,     0 unmodified\n2026-10-01T07:05:56+0000 INFO Dirs:          310 new,     0 changed,     0 unmodified\n2026-10-01T07:05:56+0000 INFO Added to the repository: 174.706 MiB (160.167 MiB stored)\n2026-10-01T07:05:56+0000 INFO \n2026-10-01T07:05:56+0000 INFO processed 184 files, 174.567 MiB in 0:01\n2026-10-01T07:05:56+0000 INFO snapshot 4acab119 saved\n2026-10-01T07:05:56+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "args": [
+      "backup"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": " Container minecraft-57df2bbc-backup-run-95a61e87c655 Creating \n Container minecraft-57df2bbc-backup-run-95a61e87c655 Created \ntime=\"2026-10-01T07:05:58Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:05:58+0000 INFO Repository already initialized\n2026-10-01T07:05:58+0000 INFO Checking for stale locks\n2026-10-01T07:05:59+0000 INFO Checking repo integrity\n2026-10-01T07:06:00+0000 INFO waiting initial delay of 0...\n2026-10-01T07:06:00+0000 INFO waiting for rcon readiness...\n2026-10-01T07:06:00+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:06:00+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:06:00+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:06:00+0000 INFO Command executed successfully sync\n2026-10-01T07:06:00+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:06:00+0000 INFO invalid argument \"invalid\" for \"--limit-upload\" flag: strconv.ParseInt: parsing \"invalid\": invalid syntax\n2026-10-01T07:06:00+0000 ERROR Backup failed with exit code 1\n2026-10-01T07:06:00+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "first_still_active_after_second_save_on": true,
+    "second_prefix": " Container minecraft-57df2bbc-backup-run-e3abdd5cbb9a Creating \n Container minecraft-57df2bbc-backup-run-e3abdd5cbb9a Created \ntime=\"2026-10-01T07:06:03Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:06:04+0000 INFO Repository already initialized\n2026-10-01T07:06:04+0000 INFO Checking for stale locks\n2026-10-01T07:06:04+0000 INFO Checking repo integrity\n2026-10-01T07:06:05+0000 INFO waiting initial delay of 0...\n2026-10-01T07:06:05+0000 INFO waiting for rcon readiness...\n2026-10-01T07:06:05+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "args": [
+      "command",
+      "save-on"
+    ],
+    "exit": 0,
+    "stdout": "Saving is already turned on\n",
+    "stderr": ""
+  },
+  {
+    "first_exit": 0,
+    "first_log": " Container minecraft-57df2bbc-backup-run-c3f4dc254ad3 Creating \n Container minecraft-57df2bbc-backup-run-c3f4dc254ad3 Created \ntime=\"2026-10-01T07:06:01Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:06:02+0000 INFO Repository already initialized\n2026-10-01T07:06:02+0000 INFO Checking for stale locks\n2026-10-01T07:06:02+0000 INFO Checking repo integrity\n2026-10-01T07:06:03+0000 INFO waiting initial delay of 0...\n2026-10-01T07:06:03+0000 INFO waiting for rcon readiness...\n2026-10-01T07:06:03+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:06:03+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:06:03+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:06:03+0000 INFO Command executed successfully sync\n2026-10-01T07:06:15+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:06:16+0000 INFO using parent snapshot 4acab119\n2026-10-01T07:06:16+0000 INFO \n2026-10-01T07:06:16+0000 INFO Files:           0 new,    15 changed,   169 unmodified\n2026-10-01T07:06:16+0000 INFO Dirs:            0 new,    16 changed,   294 unmodified\n2026-10-01T07:06:16+0000 INFO Added to the repository: 31.112 KiB (12.808 KiB stored)\n2026-10-01T07:06:16+0000 INFO \n2026-10-01T07:06:16+0000 INFO processed 184 files, 174.567 MiB in 0:00\n2026-10-01T07:06:16+0000 INFO snapshot 3e55c05f saved\n2026-10-01T07:06:16+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "second_exit": 0,
+    "second_log": " Container minecraft-57df2bbc-backup-run-e3abdd5cbb9a Creating \n Container minecraft-57df2bbc-backup-run-e3abdd5cbb9a Created \ntime=\"2026-10-01T07:06:03Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:06:04+0000 INFO Repository already initialized\n2026-10-01T07:06:04+0000 INFO Checking for stale locks\n2026-10-01T07:06:04+0000 INFO Checking repo integrity\n2026-10-01T07:06:05+0000 INFO waiting initial delay of 0...\n2026-10-01T07:06:05+0000 INFO waiting for rcon readiness...\n2026-10-01T07:06:05+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:06:16+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:06:16+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:06:16+0000 INFO Command executed successfully sync\n2026-10-01T07:06:16+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:06:16+0000 INFO repo already locked, waiting up to 1m0s for the lock\n2026-10-01T07:06:21+0000 INFO using parent snapshot 3e55c05f\n2026-10-01T07:06:21+0000 INFO \n2026-10-01T07:06:21+0000 INFO Files:           0 new,    15 changed,   169 unmodified\n2026-10-01T07:06:21+0000 INFO Dirs:            0 new,    16 changed,   294 unmodified\n2026-10-01T07:06:21+0000 INFO Added to the repository: 30.669 KiB (12.277 KiB stored)\n2026-10-01T07:06:21+0000 INFO \n2026-10-01T07:06:21+0000 INFO processed 184 files, 174.567 MiB in 0:05\n2026-10-01T07:06:21+0000 INFO snapshot 64945583 saved\n2026-10-01T07:06:21+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:06:22+0000 INFO Pruning snapshots using --keep-daily 7 --keep-weekly 4 --keep-monthly 6\n2026-10-01T07:06:23+0000 INFO Applying Policy: keep 7 daily, 4 weekly, 6 monthly snapshots\n2026-10-01T07:06:23+0000 INFO keep 2 snapshots:\n2026-10-01T07:06:23+0000 INFO ID        Time                 Host        Tags               Reasons                  Paths  Size\n2026-10-01T07:06:23+0000 INFO ---------------------------------------------------------------------------------------------------------\n2026-10-01T07:06:23+0000 INFO 4acab119  2026-10-01 07:05:55  minecraft   mc_backups,server  oldest daily snapshot    /data  174.567 MiB\n2026-10-01T07:06:23+0000 INFO                                                               oldest weekly snapshot\n2026-10-01T07:06:23+0000 INFO                                                               oldest monthly snapshot\n2026-10-01T07:06:23+0000 INFO 64945583  2026-10-01 07:06:16  minecraft   mc_backups,server  daily snapshot           /data  174.567 MiB\n2026-10-01T07:06:23+0000 INFO                                                               weekly snapshot\n2026-10-01T07:06:23+0000 INFO                                                               monthly snapshot\n2026-10-01T07:06:23+0000 INFO ---------------------------------------------------------------------------------------------------------\n2026-10-01T07:06:23+0000 INFO Timestamps shown in Etc/UTC\n2026-10-01T07:06:23+0000 INFO 2 snapshots\n2026-10-01T07:06:23+0000 INFO \n2026-10-01T07:06:23+0000 INFO remove 1 snapshots:\n2026-10-01T07:06:23+0000 INFO ID        Time                 Host        Tags               Paths  Size\n2026-10-01T07:06:23+0000 INFO --------------------------------------------------------------------------------\n2026-10-01T07:06:23+0000 INFO 3e55c05f  2026-10-01 07:06:15  minecraft   mc_backups,server  /data  174.567 MiB\n2026-10-01T07:06:23+0000 INFO --------------------------------------------------------------------------------\n2026-10-01T07:06:23+0000 INFO Timestamps shown in Etc/UTC\n2026-10-01T07:06:23+0000 INFO 1 snapshots\n2026-10-01T07:06:23+0000 INFO \n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  1 / 1 files deleted\n2026-10-01T07:06:23+0000 INFO 1 snapshots have been removed, running prune\n2026-10-01T07:06:23+0000 INFO loading all snapshots...\n2026-10-01T07:06:23+0000 INFO finding data that is still in use for 2 snapshots\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  2 / 2 snapshots\n2026-10-01T07:06:23+0000 INFO searching used packs...\n2026-10-01T07:06:23+0000 INFO collecting packs for deletion and repacking\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  15 / 15 packs processed\n2026-10-01T07:06:23+0000 INFO \n2026-10-01T07:06:23+0000 INFO to repack:             8 blobs / 2.305 KiB\n2026-10-01T07:06:23+0000 INFO this removes:          7 blobs / 1.465 KiB\n2026-10-01T07:06:23+0000 INFO to delete:            17 blobs / 9.857 KiB\n2026-10-01T07:06:23+0000 INFO total prune:          24 blobs / 11.322 KiB\n2026-10-01T07:06:23+0000 INFO remaining:           604 blobs / 160.156 MiB\n2026-10-01T07:06:23+0000 INFO unused size after prune: 0 B (0.00% of remaining size)\n2026-10-01T07:06:23+0000 INFO \n2026-10-01T07:06:23+0000 INFO repacking packs\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  1 / 1 packs repacked\n2026-10-01T07:06:23+0000 INFO rebuilding index\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  4 / 4 indexes processed\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  4 / 4 old indexes deleted\n2026-10-01T07:06:23+0000 INFO removing 2 old packs\n2026-10-01T07:06:23+0000 INFO [0:00] 100.00%  2 / 2 files deleted\n2026-10-01T07:06:23+0000 INFO done\n"
+  },
+  {
+    "args": [
+      "compose",
+      "down",
+      "--volumes",
+      "--remove-orphans",
+      "--timeout",
+      "30"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": " Container minecraft-57df2bbc-server-1 Stopping \n Container minecraft-57df2bbc-server-1 Stopped \n Container minecraft-57df2bbc-server-1 Removing \n Container minecraft-57df2bbc-server-1 Removed \n Network minecraft-57df2bbc_default Removing \n Network minecraft-57df2bbc_default Removed \n"
+  },
+  {
+    "owned_resources_remaining": {
+      "container": [],
+      "network": [],
+      "volume": []
+    }
+  }
+]

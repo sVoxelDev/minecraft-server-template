@@ -111,6 +111,11 @@ class SetupBoundary(unittest.TestCase):
             result = self.invoke('doctor')
             self.assertNotEqual(result.returncode, 0, result.stdout)
             self.assertIn('network', result.stderr.lower())
+        for definition in [{'name': 'unrelated-bridge'}, {'external': True, 'name': 'unrelated-bridge'}, {'driver': 'macvlan'}]:
+            (self.root / '.state/compose.yaml').write_text(json.dumps({'networks': {'default': definition}}))
+            result = self.invoke('doctor')
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertIn('network', result.stderr.lower())
 
     def test_literal_motd_survives_setup_and_compose(self):
         motd = "Unicode ☃ $HOME ${SERVER_IMAGE} backslash \\" + "' quote \\\\ tail"

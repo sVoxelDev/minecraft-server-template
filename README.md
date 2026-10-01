@@ -9,7 +9,7 @@ You need Python 3.11+, Docker Engine 28+, the `docker compose` plugin v2 or v5, 
 Read the [Minecraft EULA](https://aka.ms/MinecraftEULA). The flag below records your explicit acceptance.
 
 ```sh
-git clone https://github.com/Silthus/minecraft-server-template.git
+git clone https://github.com/sVoxelDev/minecraft-server-template.git
 cd minecraft-server-template
 ./scripts/minecraft setup --accept-eula --start
 ```
@@ -58,7 +58,7 @@ Use the [START prompt](START.md) for a coding agent. Its discoverable [setup ski
 ./scripts/check-versions
 ```
 
-Static and local modes exercise the CLI and resolved Compose boundaries without starting containers. Full Docker mode requires native Linux Docker networking and GNU `timeout`. It accepts the EULA for disposable tests only, runs unique projects on ephemeral loopback ports, checks live protocol and RCON, recreates containers, and boots a restored world. It removes only its own resources and exports redacted command logs, assertions and versions. Read [the validation report](docs/validation.md) for actual results and limits. CI runs the local gate on every change and exposes a manual full runtime gate.
+Static and local modes exercise the CLI and resolved Compose boundaries without starting containers. Full Docker mode requires native Linux Docker networking and GNU `timeout`. It accepts the EULA for disposable tests only, runs unique projects on ephemeral loopback ports, checks live protocol and RCON, recreates containers, and boots a restored world. It removes only its own resources and exports redacted command logs, assertions and versions. Read [the validation report](docs/validation.md) for actual results and limits. CI runs the local gate on every change and the full Docker gate on pull requests or explicit dispatch. Archive copies can validate without a Git index; the fallback excludes generated data, secrets and legacy runtime paths.
 
 Existing 1.17 deployments must follow [the migration guide](docs/migration.md). Setup never upgrades production data. [Current standards](docs/current-standards.md) records the cited version and security decisions.
 

@@ -1,0 +1,25 @@
+[
+  {
+    "case": "project override",
+    "setup_exit": 0,
+    "config_exit": 0,
+    "effective_project": "unrelated-production-review-proof",
+    "generated_project": "COMPOSE_PROJECT_NAME='minecraft-48967ac5'",
+    "doctor_exit": 0,
+    "doctor_configuration": "valid"
+  },
+  {
+    "case": "host networking",
+    "setup_exit": 0,
+    "config_exit": 0,
+    "network_mode": "host",
+    "ports": [],
+    "doctor_exit": 0,
+    "doctor_configuration": "valid"
+  },
+  {
+    "case": "MOTD quoting",
+    "setup_exit": 0,
+    "config_exit": 1
+  }
+]

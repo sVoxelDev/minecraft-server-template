@@ -1,0 +1,121 @@
+2026-10-01T07:21:21.844523+00:00 exit=0 python3 -m unittest discover -s tests -v
+2026-10-01T07:21:24.020342+00:00 exit=0 docker ps -aq
+2026-10-01T07:21:24.073588+00:00 exit=0 docker version
+2026-10-01T07:21:24.092232+00:00 exit=0 docker create --label com.docker.compose.project=minecraft-sentinel-ef7d293852e84c0d --name minecraft-sentinel-ef7d293852e84c0d nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
+2026-10-01T07:21:24.189120+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft setup --accept-eula --bind 127.0.0.1 --port 41385 --web-port 49491 --memory 2G --motd Unicode ☃ $HOME ${SERVER_IMAGE} backslash \' quote \\ tail --profile backup --profile database --profile web
+2026-10-01T07:21:24.231655+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft setup --accept-eula --bind 127.0.0.1 --port 41385 --web-port 49491 --memory 2G --motd Unicode ☃ $HOME ${SERVER_IMAGE} backslash \' quote \\ tail --profile backup --profile database --profile web --start
+2026-10-01T07:21:46.143874+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/status --port 41385
+PASS 26.2 Minecraft status
+PASS custom MOTD reached protocol
+2026-10-01T07:21:46.177880+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose logs --no-color server
+PASS Paper exact build
+2026-10-01T07:21:46.333459+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T server sha256sum /data/paper-26.2-129.jar
+PASS Paper downloaded artifact checksum
+2026-10-01T07:21:46.538847+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T server sh -c grep -E "^(online-mode|enable-query)=" /data/server.properties
+PASS effective standalone authentication and query settings
+2026-10-01T07:21:46.695884+00:00 exit=0 python3 /tmp/minecraft validation 4_kfbfcj/stable paper/tests/login.py --port 41385 --expect auth
+PASS standalone requires account authentication
+2026-10-01T07:21:46.745599+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T server java -version
+2026-10-01T07:21:46.952207+00:00 exit=1 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T server rcon-cli --password wrong list
+PASS wrong RCON password denied
+2026-10-01T07:21:47.157979+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command scoreboard objectives add proof dummy
+2026-10-01T07:21:47.372308+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command scoreboard players set Proof proof 42
+2026-10-01T07:21:47.578424+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command save-all flush
+2026-10-01T07:21:47.837839+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose up -d --force-recreate --no-deps --wait --wait-timeout 600 server
+2026-10-01T07:22:05.332850+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command scoreboard players get Proof proof
+PASS world survives container recreation
+2026-10-01T07:22:05.538752+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft backup
+2026-10-01T07:22:09.582214+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft snapshots
+PASS encrypted snapshot created
+2026-10-01T07:22:10.790644+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose logs --no-color server backup
+PASS backup flushed world and resumed saves
+PASS scheduled backup interval active
+2026-10-01T07:22:10.947006+00:00 exit=1 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose run --rm --no-deps -e BACKUP_INTERVAL=0 -e INITIAL_DELAY=0 -e PRE_BACKUP_SCRIPT=exit 73 backup
+PASS backup failure is reported
+2026-10-01T07:22:13.508431+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command save-on
+PASS backup failure resumes automatic saving
+2026-10-01T07:22:13.717233+00:00 exit=1 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft backup
+PASS inner Restic failure returns nonzero with useful output
+2026-10-01T07:22:16.967623+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command save-on
+PASS inner Restic failure resumes saves
+PASS first backup holds lock after flush
+PASS second backup completed nonmutating readiness while first locked
+2026-10-01T07:22:21.832880+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command save-off
+PASS overlap cannot enable saving while first holds lock
+PASS overlap-first succeeded
+PASS overlap-second succeeded
+2026-10-01T07:22:31.145547+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command save-on
+PASS both overlapping backups resume saves
+2026-10-01T07:22:31.352486+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft command scoreboard players set Proof proof 99
+2026-10-01T07:22:31.560025+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft restore /tmp/minecraft validation 4_kfbfcj/restored snapshot
+2026-10-01T07:22:33.474839+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft setup --accept-eula --bind 127.0.0.1 --port 58493 --web-port 45643 --memory 2G --motd Unicode ☃ $HOME ${SERVER_IMAGE} backslash \' quote \\ tail
+2026-10-01T07:22:33.570369+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft start
+2026-10-01T07:22:50.828823+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/status --port 58493
+PASS 26.2 Minecraft status
+2026-10-01T07:22:50.861288+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft command scoreboard players get Proof proof
+PASS restored server contains snapshot world
+2026-10-01T07:22:51.064636+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft compose logs --no-color
+2026-10-01T07:22:51.219191+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft compose images --format json
+2026-10-01T07:22:51.424049+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft stop
+2026-10-01T07:22:52.484095+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T database sh -c mariadb -uminecraft -p"$(cat /run/secrets/database)" minecraft -e "CREATE TABLE proof (value INT); INSERT INTO proof VALUES (42); SELECT value FROM proof;"
+PASS database authenticates and round trips data
+2026-10-01T07:22:52.689961+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose up -d --force-recreate --no-deps --wait --wait-timeout 300 database
+2026-10-01T07:22:58.756353+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T database sh -c mariadb -uminecraft -p"$(cat /run/secrets/database)" minecraft -e "SELECT value FROM proof;"
+PASS database survives recreation
+2026-10-01T07:22:58.965934+00:00 exit=1 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose exec -T database mariadb -uminecraft -pwrong minecraft -e SELECT 1
+PASS database wrong password denied
+2026-10-01T07:22:59.173736+00:00 exit=0 python3 -c import urllib.request; print(urllib.request.urlopen("http://127.0.0.1:49491").read().decode())
+PASS optional web serves files
+2026-10-01T07:22:59.241654+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose logs --no-color
+2026-10-01T07:22:59.447807+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose images --format json
+2026-10-01T07:22:59.655294+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft stop
+2026-10-01T07:23:00.868635+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft setup --accept-eula --bind 127.0.0.1 --port 53985 --web-port 59677 --memory 2G --motd Unicode ☃ $HOME ${SERVER_IMAGE} backslash \' quote \\ tail --distribution vanilla
+2026-10-01T07:23:00.909471+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft start
+2026-10-01T07:23:17.197735+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/status --port 53985
+PASS 26.3 Minecraft status
+2026-10-01T07:23:17.231222+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft command list
+PASS Vanilla RCON works
+2026-10-01T07:23:17.388211+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose exec -T server sh -c find /data -maxdepth 1 -name "*.jar" -exec sha1sum {} \;
+PASS Vanilla downloaded artifact checksum
+2026-10-01T07:23:17.593814+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose exec -T server sh -c grep -E "^(online-mode|enable-query)=" /data/server.properties
+PASS effective Vanilla authentication and query settings
+2026-10-01T07:23:17.753353+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose exec -T server java -version
+2026-10-01T07:23:17.964081+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose logs --no-color
+2026-10-01T07:23:18.122326+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose images --format json
+2026-10-01T07:23:18.330356+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft stop
+2026-10-01T07:23:19.392791+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/velocity network/scripts/minecraft setup --accept-eula --bind 127.0.0.1 --port 36853 --web-port 50773 --memory 2G --motd Unicode ☃ $HOME ${SERVER_IMAGE} backslash \' quote \\ tail --network
+2026-10-01T07:23:19.435135+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/velocity network/scripts/minecraft start
+2026-10-01T07:23:46.411104+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/velocity network/scripts/status --port 36853
+PASS Velocity Minecraft status
+2026-10-01T07:23:46.445066+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/velocity network/scripts/minecraft compose logs --no-color
+2026-10-01T07:23:46.601039+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/velocity network/scripts/minecraft compose down --volumes --remove-orphans --timeout 120
+2026-10-01T07:23:48.311072+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/latest vanilla/scripts/minecraft compose down --volumes --remove-orphans --timeout 120
+2026-10-01T07:23:48.466329+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/restored server/scripts/minecraft compose down --volumes --remove-orphans --timeout 120
+2026-10-01T07:23:48.625491+00:00 exit=0 /tmp/minecraft validation 4_kfbfcj/stable paper/scripts/minecraft compose down --volumes --remove-orphans --timeout 120
+2026-10-01T07:23:48.781530+00:00 exit=0 docker inspect --format {{.Id}} fc4c0951a39ad5c2b632924f66bc8dadf2cb996159775ff2a63e62d9d3adcc8a
+2026-10-01T07:23:48.797858+00:00 exit=0 docker rm fc4c0951a39ad5c2b632924f66bc8dadf2cb996159775ff2a63e62d9d3adcc8a
+PASS unrelated stable sentinel survives contaminated cleanup
+2026-10-01T07:23:48.832475+00:00 exit=0 docker ps -aq
+2026-10-01T07:23:48.900919+00:00 exit=0 docker container ls -q --filter label=com.docker.compose.project=minecraft-a525d515
+2026-10-01T07:23:48.916868+00:00 exit=0 docker network ls -q --filter label=com.docker.compose.project=minecraft-a525d515
+2026-10-01T07:23:48.932838+00:00 exit=0 docker volume ls -q --filter label=com.docker.compose.project=minecraft-a525d515
+2026-10-01T07:23:48.948679+00:00 exit=0 docker container ls -q --filter label=com.docker.compose.project=minecraft-4b9a956e
+2026-10-01T07:23:48.965162+00:00 exit=0 docker network ls -q --filter label=com.docker.compose.project=minecraft-4b9a956e
+2026-10-01T07:23:48.980909+00:00 exit=0 docker volume ls -q --filter label=com.docker.compose.project=minecraft-4b9a956e
+2026-10-01T07:23:48.996485+00:00 exit=0 docker container ls -q --filter label=com.docker.compose.project=minecraft-55aeb773
+2026-10-01T07:23:49.011985+00:00 exit=0 docker network ls -q --filter label=com.docker.compose.project=minecraft-55aeb773
+2026-10-01T07:23:49.027382+00:00 exit=0 docker volume ls -q --filter label=com.docker.compose.project=minecraft-55aeb773
+2026-10-01T07:23:49.043171+00:00 exit=0 docker container ls -q --filter label=com.docker.compose.project=minecraft-6d68fdaa
+2026-10-01T07:23:49.059089+00:00 exit=0 docker network ls -q --filter label=com.docker.compose.project=minecraft-6d68fdaa
+2026-10-01T07:23:49.074539+00:00 exit=0 docker volume ls -q --filter label=com.docker.compose.project=minecraft-6d68fdaa
+PASS owned containers networks and volumes removed
+Traceback (most recent call last):
+  File "/tmp/minecraft-modernize/./scripts/validate", line 330, in <module>
+    main()
+  File "/tmp/minecraft-modernize/./scripts/validate", line 319, in main
+    validation.full(args.scenario)
+  File "/tmp/minecraft-modernize/./scripts/validate", line 241, in full
+    self.check('literal Velocity MOTD reached protocol', MOTD == (response['description'].get('text') if isinstance(response['description'], dict) else response['description']))
+  File "/tmp/minecraft-modernize/./scripts/validate", line 77, in check
+    raise AssertionError(label)
+AssertionError: literal Velocity MOTD reached protocol

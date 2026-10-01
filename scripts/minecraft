@@ -183,7 +183,8 @@ def validate_security(config):
             raise ValueError('Unsafe network or privilege bypass for ' + name)
         for network in service.get('networks', {}):
             definition = resolved.get('networks', {}).get(network, {})
-            if definition.get('external') or definition.get('driver', 'bridge') != 'bridge':
+            if (definition.get('external') or definition.get('driver', 'bridge') != 'bridge' or
+                    definition.get('name') != resolved['name'] + '_' + network or definition.get('driver_opts')):
                 raise ValueError('Only project-owned bridge networks are supported.')
     server = resolved['services']['server']
     expected_online = str(not config['network']).lower()
