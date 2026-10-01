@@ -1,0 +1,9 @@
+{
+  "secret_value_matches": 0,
+  "generated_fixture_paths_removed": [
+    ".state",
+    "data",
+    "backups"
+  ],
+  "completed": "2026-10-01T07:38:39.118970+00:00"
+}

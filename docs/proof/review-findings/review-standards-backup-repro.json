@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "args": [
+        "setup",
+        "--accept-eula",
+        "--bind",
+        "127.0.0.1",
+        "--port",
+        "57443",
+        "--memory",
+        "2G",
+        "--start",
+        "--wait",
+        "120"
+      ],
+      "exit": 0,
+      "stdout": "There are 0 of a max of 20 players online: \n{\"distribution\": \"paper\", \"network\": false, \"profiles\": [], \"setup\": \"created\"}\n{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n{\"ready\": true}\n",
+      "stderr": " Network minecraft-4bafbe62_default Creating \n Network minecraft-4bafbe62_default Creating \n Network minecraft-4bafbe62_default Created \n Network minecraft-4bafbe62_default Created \n Container minecraft-4bafbe62-server-1 Creating \n Container minecraft-4bafbe62-server-1 Created \n Container minecraft-4bafbe62-server-1 Starting \n Container minecraft-4bafbe62-server-1 Started \n Container minecraft-4bafbe62-server-1 Waiting \n Container minecraft-4bafbe62-server-1 Healthy \n"
+    },
+    {
+      "args": [
+        "backup"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": " Container minecraft-4bafbe62-backup-run-c3cecd735e79 Creating \n Container minecraft-4bafbe62-backup-run-c3cecd735e79 Created \ntime=\"2026-10-01T06:55:03Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T06:55:03+0000 INFO Initializing new restic repository...\n2026-10-01T06:55:05+0000 INFO created restic repository d0b5df7cd6 at /backups/repository\n2026-10-01T06:55:05+0000 INFO \n2026-10-01T06:55:05+0000 INFO Please note that knowledge of your password is required to access\n2026-10-01T06:55:05+0000 INFO the repository. Losing your password means that your data is\n2026-10-01T06:55:05+0000 INFO irrecoverably lost.\n2026-10-01T06:55:05+0000 INFO waiting initial delay of 0...\n2026-10-01T06:55:05+0000 INFO waiting for rcon readiness...\n2026-10-01T06:55:05+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T06:55:06+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T06:55:06+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T06:55:06+0000 INFO Command executed successfully sync\n2026-10-01T06:55:06+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T06:55:06+0000 INFO no parent snapshot found, will read all files\n2026-10-01T06:55:07+0000 INFO \n2026-10-01T06:55:07+0000 INFO Files:         183 new,     0 changed,     0 unmodified\n2026-10-01T06:55:07+0000 INFO Dirs:          310 new,     0 changed,     0 unmodified\n2026-10-01T06:55:07+0000 INFO Added to the repository: 174.716 MiB (160.205 MiB stored)\n2026-10-01T06:55:07+0000 INFO \n2026-10-01T06:55:07+0000 INFO processed 183 files, 174.554 MiB in 0:01\n2026-10-01T06:55:07+0000 INFO snapshot d7922ac4 saved\n2026-10-01T06:55:07+0000 INFO Command executed successfully rcon-cli save-on\n"
+    },
+    {
+      "args": [
+        "backup"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": " Container minecraft-4bafbe62-backup-run-51a56a09dc03 Creating \n Container minecraft-4bafbe62-backup-run-51a56a09dc03 Created \ntime=\"2026-10-01T06:55:08Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T06:55:09+0000 INFO Repository already initialized\n2026-10-01T06:55:09+0000 INFO Checking for stale locks\n2026-10-01T06:55:09+0000 INFO Checking repo integrity\n2026-10-01T06:55:10+0000 INFO waiting initial delay of 0...\n2026-10-01T06:55:10+0000 INFO waiting for rcon readiness...\n2026-10-01T06:55:10+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T06:55:10+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T06:55:10+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T06:55:10+0000 INFO Command executed successfully sync\n2026-10-01T06:55:10+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T06:55:10+0000 INFO invalid argument \"invalid\" for \"--limit-upload\" flag: strconv.ParseInt: parsing \"invalid\": invalid syntax\n2026-10-01T06:55:10+0000 ERROR Backup failed with exit code 1\n2026-10-01T06:55:10+0000 INFO Command executed successfully rcon-cli save-on\n"
+    },
+    {
+      "args": [
+        "command",
+        "save-on"
+      ],
+      "exit": 0,
+      "stdout": "Saving is already turned on\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "compose",
+        "down",
+        "--volumes",
+        "--remove-orphans",
+        "--timeout",
+        "30"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": " Container minecraft-4bafbe62-server-1 Stopping \n Container minecraft-4bafbe62-server-1 Stopped \n Container minecraft-4bafbe62-server-1 Removing \n Container minecraft-4bafbe62-server-1 Removed \n Network minecraft-4bafbe62_default Removing \n Network minecraft-4bafbe62_default Removed \n"
+    }
+  ]
+}

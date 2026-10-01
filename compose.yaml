@@ -1,0 +1,148 @@
+services:
+  server:
+    image: ${SERVER_IMAGE:?}
+    user: ${RUN_UID:?}:${RUN_GID:?}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    mem_limit: ${CONTAINER_MEMORY:?}
+    environment:
+      EULA: ${EULA:?}
+      TYPE: ${DISTRIBUTION:?}
+      VERSION: ${PAPER_VERSION:?}
+      PAPER_BUILD: ${PAPER_BUILD:?}
+      MEMORY: ${MEMORY:?}
+      ONLINE_MODE: ${ONLINE_MODE:?}
+      MOTD: ${MOTD:?}
+      ENABLE_RCON: "true"
+      RCON_PASSWORD_FILE: /run/secrets/rcon
+      ENABLE_QUERY: "false"
+      VIEW_DISTANCE: "6"
+      SIMULATION_DISTANCE: "4"
+      PAUSE_WHEN_EMPTY_SECONDS: "-1"
+      SKIP_DOWNLOAD_DEFAULTS: "true"
+      COPY_CONFIG_DEST: /data
+      SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+    volumes:
+      - ./data/server:/data
+      - ./configs/server:/config:ro
+      - ./plugins/server:/plugins:ro
+    secrets: [rcon]
+    healthcheck:
+      test: [CMD, mc-health]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+    stop_grace_period: 2m
+  proxy:
+    profiles: [proxy]
+    image: ${PROXY_IMAGE:?}
+    user: ${RUN_UID:?}:${RUN_GID:?}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    mem_limit: 1G
+    environment:
+      TYPE: VELOCITY
+      VELOCITY_VERSION: ${VELOCITY_VERSION:?}
+      VELOCITY_BUILD_ID: ${VELOCITY_BUILD_ID:?}
+      MEMORY: 512M
+      ENABLE_RCON: "false"
+      SKIP_DOWNLOAD_DEFAULTS: "true"
+    volumes:
+      - ./data/proxy:/server
+      - ./.state/velocity.toml:/server/velocity.toml
+      - ./.state/secrets/forwarding:/server/forwarding.secret:ro
+      - ./plugins/proxy:/plugins:ro
+    ports:
+      - ${BIND_ADDRESS:?}:${GAME_PORT:?}:25565
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, mc-monitor, status, --host, localhost, --port, "25565"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    stop_grace_period: 30s
+  backup:
+    profiles: [backup]
+    image: ${BACKUP_RUNTIME_IMAGE:?}
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+      args:
+        BACKUP_IMAGE: ${BACKUP_IMAGE:?}
+    user: ${RUN_UID:?}:${RUN_GID:?}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    environment:
+      BACKUP_METHOD: restic
+      BACKUP_INTERVAL: 6h
+      INITIAL_DELAY: 0
+      BACKUP_ON_STARTUP: "true"
+      RCON_HOST: server
+      RCON_PASSWORD_FILE: /run/secrets/rcon
+      RCON_RETRIES: "3"
+      RCON_RETRY_INTERVAL: 5s
+      RESTIC_REPOSITORY: /backups/repository
+      RESTIC_PASSWORD_FILE: /run/secrets/restic
+      RESTIC_HOST: minecraft
+      BACKUP_NAME: server
+      PRUNE_RESTIC_RETENTION: --keep-daily 7 --keep-weekly 4 --keep-monthly 6
+      EXCLUDES: cache,logs,*.tmp
+      SKIP_LOCKING: "false"
+    volumes:
+      - ./data/server:/data:ro
+      - ./backups:/backups
+    secrets: [rcon, restic]
+    depends_on:
+      server:
+        condition: service_healthy
+  database:
+    profiles: [database]
+    image: ${DATABASE_IMAGE:?}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    environment:
+      MARIADB_DATABASE: minecraft
+      MARIADB_USER: minecraft
+      MARIADB_PASSWORD_FILE: /run/secrets/database
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/database_root
+    volumes:
+      - database:/var/lib/mysql
+    secrets: [database, database_root]
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+  web:
+    profiles: [web]
+    image: ${WEB_IMAGE:?}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    ports:
+      - 127.0.0.1:${WEB_PORT:?}:80
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+secrets:
+  rcon:
+    file: ./.state/secrets/rcon
+  restic:
+    file: ./.state/secrets/restic
+  database:
+    file: ./.state/secrets/database
+  database_root:
+    file: ./.state/secrets/database_root
+
+volumes:
+  database:

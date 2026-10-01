@@ -1,0 +1,78 @@
+[
+  {
+    "assertion": "26.2 Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "custom MOTD reached protocol",
+    "passed": true
+  },
+  {
+    "assertion": "Paper exact build",
+    "passed": true
+  },
+  {
+    "assertion": "Paper downloaded artifact checksum",
+    "passed": true
+  },
+  {
+    "assertion": "effective standalone authentication and query settings",
+    "passed": true
+  },
+  {
+    "assertion": "standalone requires account authentication",
+    "passed": true
+  },
+  {
+    "assertion": "wrong RCON password denied",
+    "passed": true
+  },
+  {
+    "assertion": "world survives container recreation",
+    "passed": true
+  },
+  {
+    "assertion": "encrypted snapshot created",
+    "passed": true
+  },
+  {
+    "assertion": "backup flushed world and resumed saves",
+    "passed": true
+  },
+  {
+    "assertion": "scheduled backup interval active",
+    "passed": true
+  },
+  {
+    "assertion": "backup failure is reported",
+    "passed": true
+  },
+  {
+    "assertion": "backup failure resumes automatic saving",
+    "passed": true
+  },
+  {
+    "assertion": "inner Restic failure returns nonzero with useful output",
+    "passed": true
+  },
+  {
+    "assertion": "inner Restic failure resumes saves",
+    "passed": true
+  },
+  {
+    "assertion": "first backup holds lock after flush",
+    "passed": true
+  },
+  {
+    "assertion": "second backup completed nonmutating readiness while first locked",
+    "passed": false
+  },
+  {
+    "assertion": "unrelated stable sentinel survives contaminated cleanup",
+    "passed": true
+  },
+  {
+    "assertion": "owned containers networks and volumes removed",
+    "passed": true
+  }
+]

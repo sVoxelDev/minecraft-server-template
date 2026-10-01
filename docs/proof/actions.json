@@ -1,0 +1,16 @@
+[
+  {
+    "repository": "actions/checkout",
+    "version": "v7.0.1",
+    "commit": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "release_url": "https://github.com/actions/checkout/releases/tag/v7.0.1",
+    "published_at": "2026-07-20T15:10:05Z"
+  },
+  {
+    "repository": "actions/upload-artifact",
+    "version": "v7.0.1",
+    "commit": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+    "release_url": "https://github.com/actions/upload-artifact/releases/tag/v7.0.1",
+    "published_at": "2026-04-10T17:31:14Z"
+  }
+]

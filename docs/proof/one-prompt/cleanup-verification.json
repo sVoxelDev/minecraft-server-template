@@ -1,0 +1,18 @@
+{
+  "containers": {
+    "command": "docker ps -a --filter label=com.docker.compose.project=minecraft-c56fd5f6 --format {{.ID}} {{.Names}}",
+    "exit": 0,
+    "remaining": []
+  },
+  "networks": {
+    "command": "docker network ls --filter label=com.docker.compose.project=minecraft-c56fd5f6 --format {{.ID}} {{.Name}}",
+    "exit": 0,
+    "remaining": []
+  },
+  "volumes": {
+    "command": "docker volume ls --filter label=com.docker.compose.project=minecraft-c56fd5f6 --format {{.Name}}",
+    "exit": 0,
+    "remaining": []
+  },
+  "gameplay_port_connect_result": 111
+}

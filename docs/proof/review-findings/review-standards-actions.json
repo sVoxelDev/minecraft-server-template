@@ -1,0 +1,23 @@
+[
+  {
+    "repo": "actions/checkout",
+    "pinned_commit": "11bd71901bbe5b1630ceea73d27597364c9af683",
+    "pinned_tags": [
+      "v4.2.2"
+    ],
+    "latest_release": "v7.0.1",
+    "published_at": "2026-07-20T15:10:05Z",
+    "source": "https://api.github.com/repos/actions/checkout/releases/latest"
+  },
+  {
+    "repo": "actions/upload-artifact",
+    "pinned_commit": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "pinned_tags": [
+      "v4.6.2",
+      "v4"
+    ],
+    "latest_release": "v7.0.1",
+    "published_at": "2026-04-10T17:31:14Z",
+    "source": "https://api.github.com/repos/actions/upload-artifact/releases/latest"
+  }
+]

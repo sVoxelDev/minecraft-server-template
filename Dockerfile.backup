@@ -1,0 +1,7 @@
+ARG BACKUP_IMAGE
+FROM ${BACKUP_IMAGE}
+RUN script=/opt/backup-loop.sh; \
+    expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on'; \
+    test "$(grep -Fxc "$expected" "$script")" -eq 2 && \
+    awk 'previous == "    log INFO \"waiting for rcon readiness...\"" { if ($0 != "    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on") exit 1; sub(/save-on$/, "list"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' "$script" > /tmp/backup-loop.patched && \
+    mv /tmp/backup-loop.patched "$script" && chmod +x "$script"

@@ -1,0 +1,69 @@
+ Container minecraft-012969e4-backup-run-af83048af19e Creating 
+ Container minecraft-012969e4-backup-run-af83048af19e Created 
+time="2026-10-01T07:29:33Z" level=info msg="Skipping uid/gid change since current user is not root"
+2026-10-01T07:29:34+0000 INFO Repository already initialized
+2026-10-01T07:29:34+0000 INFO Checking for stale locks
+2026-10-01T07:29:35+0000 INFO Checking repo integrity
+2026-10-01T07:29:35+0000 INFO waiting initial delay of 0...
+2026-10-01T07:29:35+0000 INFO waiting for rcon readiness...
+2026-10-01T07:29:35+0000 INFO Command executed successfully rcon-cli list
+2026-10-01T07:29:35+0000 INFO Command executed successfully rcon-cli save-off
+2026-10-01T07:29:35+0000 INFO Command executed successfully rcon-cli save-all flush
+2026-10-01T07:29:35+0000 INFO Command executed successfully sync
+2026-10-01T07:29:38+0000 INFO Backing up content in /data as host minecraft
+2026-10-01T07:29:39+0000 INFO using parent snapshot 159cbfb4
+2026-10-01T07:29:39+0000 INFO 
+2026-10-01T07:29:39+0000 INFO Files:           0 new,    15 changed,   167 unmodified
+2026-10-01T07:29:39+0000 INFO Dirs:            0 new,    16 changed,   293 unmodified
+2026-10-01T07:29:39+0000 INFO Added to the repository: 31.524 KiB (13.217 KiB stored)
+2026-10-01T07:29:39+0000 INFO 
+2026-10-01T07:29:39+0000 INFO processed 182 files, 174.559 MiB in 0:00
+2026-10-01T07:29:39+0000 INFO snapshot bcd71b74 saved
+2026-10-01T07:29:39+0000 INFO Command executed successfully rcon-cli save-on
+2026-10-01T07:29:40+0000 INFO Pruning snapshots using --keep-daily 7 --keep-weekly 4 --keep-monthly 6
+2026-10-01T07:29:40+0000 INFO Applying Policy: keep 7 daily, 4 weekly, 6 monthly snapshots
+2026-10-01T07:29:40+0000 INFO keep 2 snapshots:
+2026-10-01T07:29:40+0000 INFO ID        Time                 Host        Tags               Reasons                  Paths  Size
+2026-10-01T07:29:40+0000 INFO ---------------------------------------------------------------------------------------------------------
+2026-10-01T07:29:40+0000 INFO 7c3e2c67  2026-10-01 07:29:05  minecraft   mc_backups,server  oldest daily snapshot    /data  174.559 MiB
+2026-10-01T07:29:40+0000 INFO                                                               oldest weekly snapshot
+2026-10-01T07:29:40+0000 INFO                                                               oldest monthly snapshot
+2026-10-01T07:29:40+0000 INFO bcd71b74  2026-10-01 07:29:38  minecraft   mc_backups,server  daily snapshot           /data  174.559 MiB
+2026-10-01T07:29:40+0000 INFO                                                               weekly snapshot
+2026-10-01T07:29:40+0000 INFO                                                               monthly snapshot
+2026-10-01T07:29:40+0000 INFO ---------------------------------------------------------------------------------------------------------
+2026-10-01T07:29:40+0000 INFO Timestamps shown in Etc/UTC
+2026-10-01T07:29:40+0000 INFO 2 snapshots
+2026-10-01T07:29:40+0000 INFO 
+2026-10-01T07:29:40+0000 INFO remove 1 snapshots:
+2026-10-01T07:29:40+0000 INFO ID        Time                 Host        Tags               Paths  Size
+2026-10-01T07:29:40+0000 INFO --------------------------------------------------------------------------------
+2026-10-01T07:29:40+0000 INFO 159cbfb4  2026-10-01 07:29:24  minecraft   mc_backups,server  /data  174.559 MiB
+2026-10-01T07:29:40+0000 INFO --------------------------------------------------------------------------------
+2026-10-01T07:29:40+0000 INFO Timestamps shown in Etc/UTC
+2026-10-01T07:29:40+0000 INFO 1 snapshots
+2026-10-01T07:29:40+0000 INFO 
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  1 / 1 files deleted
+2026-10-01T07:29:40+0000 INFO 1 snapshots have been removed, running prune
+2026-10-01T07:29:40+0000 INFO loading all snapshots...
+2026-10-01T07:29:40+0000 INFO finding data that is still in use for 2 snapshots
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  2 / 2 snapshots
+2026-10-01T07:29:40+0000 INFO searching used packs...
+2026-10-01T07:29:40+0000 INFO collecting packs for deletion and repacking
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  15 / 15 packs processed
+2026-10-01T07:29:40+0000 INFO 
+2026-10-01T07:29:40+0000 INFO to repack:            32 blobs / 16.317 KiB
+2026-10-01T07:29:40+0000 INFO this removes:         24 blobs / 12.051 KiB
+2026-10-01T07:29:40+0000 INFO to delete:             0 blobs / 0 B
+2026-10-01T07:29:40+0000 INFO total prune:          24 blobs / 12.051 KiB
+2026-10-01T07:29:40+0000 INFO remaining:           618 blobs / 160.219 MiB
+2026-10-01T07:29:40+0000 INFO unused size after prune: 0 B (0.00% of remaining size)
+2026-10-01T07:29:40+0000 INFO 
+2026-10-01T07:29:40+0000 INFO repacking packs
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  2 / 2 packs repacked
+2026-10-01T07:29:40+0000 INFO rebuilding index
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  4 / 4 indexes processed
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  4 / 4 old indexes deleted
+2026-10-01T07:29:40+0000 INFO removing 2 old packs
+2026-10-01T07:29:40+0000 INFO [0:00] 100.00%  2 / 2 files deleted
+2026-10-01T07:29:40+0000 INFO done

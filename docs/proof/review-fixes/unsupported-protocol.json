@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "tests/login.py",
+    "--version",
+    "future-unsupported",
+    "--port",
+    "1"
+  ],
+  "exit": 1,
+  "output": "{\"error\": \"Unsupported validation client protocol for Minecraft future-unsupported. Update the client packet mapping before validating this version.\"}\n"
+}

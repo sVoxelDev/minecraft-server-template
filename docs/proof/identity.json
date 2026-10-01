@@ -1,0 +1,12 @@
+{
+  "validated_runtime_commit": "bde5ede",
+  "application_commit": "989aac3",
+  "fresh_checkout": "git clone --no-hardlinks --single-branch --branch modernize/agent-ready-template",
+  "source_sha256": {
+    "compose.yaml": "4c832da5101a5640c2944c90a33e87ae0e5e2098fef0bff1199e985c611c8e05",
+    "versions.env": "73dbd2e5b0813991ba35171e6899630da3f94774b0e1b5f6c59e48c2d70edcfc",
+    "scripts/minecraft": "c889dc4aca15b0b13ebde03e713e5fe071773d2a8c7545c403061f6d1f71ef51",
+    "scripts/status": "a326245845b7fa44831e4eb0e126614cb4a2d16aeec8d75b26ac5f526b35bcbd",
+    "tests/login.py": "cbb6b114b9500dedc214b210a68b25c8a5a4df90a7641fd34e369c36d211e18b"
+  }
+}

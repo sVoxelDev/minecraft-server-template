@@ -1,0 +1,13 @@
+$ /tmp/minecraft-one-prompt-0ampoe4d/scripts/minecraft stop
+ Container minecraft-c56fd5f6-backup-1 Stopping 
+ Container minecraft-c56fd5f6-backup-1 Stopped 
+ Container minecraft-c56fd5f6-backup-1 Removing 
+ Container minecraft-c56fd5f6-backup-1 Removed 
+ Container minecraft-c56fd5f6-server-1 Stopping 
+ Container minecraft-c56fd5f6-server-1 Stopped 
+ Container minecraft-c56fd5f6-server-1 Removing 
+ Container minecraft-c56fd5f6-server-1 Removed 
+ Network minecraft-c56fd5f6_default Removing 
+ Network minecraft-c56fd5f6_default Removed 
+
+exit=0

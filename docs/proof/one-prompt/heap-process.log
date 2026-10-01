@@ -1,0 +1,4 @@
+$ docker top minecraft-c56fd5f6-server-1 -eo args
+Error response from daemon: Couldn't find PID field in ps output
+
+exit=1
