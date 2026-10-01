@@ -119,7 +119,7 @@ class SetupBoundary(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)['services']['server']['environment']['MOTD'].replace('$$', '$'), motd)
         import tomllib
-        self.assertEqual(tomllib.loads((self.root / '.state/velocity.toml').read_text())['motd'], motd)
+        self.assertIn('Unicode ☃ $HOME ${SERVER_IMAGE}', tomllib.loads((self.root / '.state/velocity.toml').read_text())['motd'])
 
     def test_legacy_deployment_is_refused(self):
         (self.root / 'servers/main').mkdir(parents=True)

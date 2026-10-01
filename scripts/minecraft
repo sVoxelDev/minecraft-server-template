@@ -170,7 +170,7 @@ try = ["main"]
 "localhost" = ["main"]
 [advanced]
 accepts-transfers = false
-'''.replace('MOTD_LITERAL', json.dumps(args.motd, ensure_ascii=False)))
+'''.replace('MOTD_LITERAL', json.dumps(args.motd.replace(chr(92), chr(92) * 2).replace('<', chr(92) + '<'), ensure_ascii=False)))
     (STATE / 'settings.json').write_text(json.dumps(config, indent=2) + '\n')
     settings()
     emit({'setup': 'created', 'distribution': args.distribution, 'network': args.network, 'profiles': profiles})
