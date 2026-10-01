@@ -1,0 +1,6 @@
+$ /tmp/minecraft-one-prompt-0ampoe4d/scripts/minecraft compose exec -T server java -version
+openjdk version "25.0.4" 2026-07-21 LTS
+OpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)
+
+exit=0

@@ -1,0 +1,1 @@
+timeout --signal=TERM --kill-after=15s 420s /tmp/minecraft-one-prompt-0ampoe4d/scripts/minecraft setup --accept-eula --distribution paper --memory 2G --bind 127.0.0.1 --port 35673 --profile backup --start --wait 360

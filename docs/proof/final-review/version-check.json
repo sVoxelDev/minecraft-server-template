@@ -1,0 +1,77 @@
+{
+  "images": {
+    "BACKUP_IMAGE": {
+      "platforms": {
+        "amd64": "sha256:67af7cc0b97936effa07ab7b24bc957e3b7562f9bbe30ff0ebc731ad1fd0a00a",
+        "arm": "sha256:b1ca897693f9ec08f34d50a6c86caeded408ca582861671ec6edc67fa78ff1dd",
+        "arm64": "sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e"
+      },
+      "reference": "itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16"
+    },
+    "DATABASE_IMAGE": {
+      "platforms": {
+        "amd64": "sha256:2f4f46f80e7251990bfdc601ae3f7f2964ddb4dc1868f7deca699fc1ece8c35e",
+        "arm64": "sha256:6b01a23e2550ac37036c3dd6187f790b56832832b53ce4173b8e2b2fed51e3a5",
+        "ppc64le": "sha256:31c7afbe80e196dec8aaaed602811b6902e09e70ec9a03ac64372760d1eb4a51",
+        "s390x": "sha256:d6addcff7350368b777769ed002b9a6b773723034edb85959c0b4aa9fd834945"
+      },
+      "reference": "mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1"
+    },
+    "PROXY_IMAGE": {
+      "platforms": {
+        "amd64": "sha256:0dca6fbd141e9623057d396922efbb3b31224737bd8a8bbb15461e2a5746164d",
+        "arm64": "sha256:6869fe181f33f394d96cc43c60bfac02293c75eaf77f9080e2290317d444e85f"
+      },
+      "reference": "itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411"
+    },
+    "SERVER_IMAGE": {
+      "platforms": {
+        "amd64": "sha256:fb2f45007e63d33322cc9c3e1c87d1aef533197889e88c5d4e6b2138f4d86620",
+        "arm64": "sha256:11fb5d3a9eac50eaab80926a90a948b1ba6714122d55e36c704e5bbd086a0429",
+        "riscv64": "sha256:744be55957502885613c65b213537d04b0e5baaa8f2ec6c10e59fde8ed8e20d2"
+      },
+      "reference": "itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e"
+    },
+    "WEB_IMAGE": {
+      "platforms": {
+        "386": "sha256:6b7a4f13aa1cb05946e90cfa70933418e51f99a9604305eec0779737077fa64d",
+        "amd64": "sha256:8f84ed99befc3891b8f329c5c202785278a2cfb7c25107d57fb2a134a3117433",
+        "arm": "sha256:3a46b783293cbd9f24fba2fbafdf391b8c8953e8dcbb0da23b841b4783be3c9e",
+        "arm64": "sha256:3abad30db61dfb2a339ea21acc9f3e6bbe78e291fcff2f835f4510c8fdfcbd83",
+        "ppc64le": "sha256:a2056a035f0ae2caef33df498ee2f22756955da24d89cc7840a500356fc1b099",
+        "riscv64": "sha256:d0f15a8a48f14a06d10b50ab988842126c0d769bd8f7d9f3b27b101b2d6b8ec6",
+        "s390x": "sha256:b2cc574e70799bfa87616aa5f6f734bef5a36c2822c7cb5efd639b28688c632a"
+      },
+      "reference": "nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94"
+    }
+  },
+  "software": {
+    "paper": {
+      "build": "129",
+      "channel": "STABLE",
+      "download": "https://fill-data.papermc.io/v1/objects/b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083/paper-26.2-129.jar",
+      "sha256": "b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083",
+      "source": "https://fill.papermc.io/v3/projects/paper/versions/26.2/builds/129",
+      "version": "26.2"
+    },
+    "vanilla": {
+      "latest_release": "26.3",
+      "server": {
+        "sha1": "33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c",
+        "size": 62294556,
+        "url": "https://piston-data.mojang.com/v1/objects/33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c/server.jar"
+      },
+      "source": "https://piston-meta.mojang.com/v1/packages/4fe1aa1ef8da1cb95c5bad1fb98890ca56dd8ca3/26.3.json",
+      "version": "26.3"
+    },
+    "velocity": {
+      "build": "36",
+      "channel": "STABLE",
+      "download": "https://fill-data.papermc.io/v1/objects/62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c/velocity-4.2.1-SNAPSHOT-36.jar",
+      "sha256": "62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c",
+      "source": "https://fill.papermc.io/v3/projects/velocity/versions/4.2.1-SNAPSHOT/builds/36",
+      "version": "4.2.1-SNAPSHOT"
+    }
+  },
+  "verified_at": "2026-10-01T07:44:46.065109+00:00"
+}

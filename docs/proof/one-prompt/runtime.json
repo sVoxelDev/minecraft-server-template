@@ -1,0 +1,124 @@
+[
+  {
+    "name": "minecraft-c56fd5f6-server-1",
+    "image_reference": "itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e",
+    "image_id": "sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "ExitCode": 0,
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-01T07:35:55.151646345Z",
+            "End": "2026-10-01T07:35:55.177208189Z",
+            "ExitCode": 0,
+            "Output": "localhost:25565 : version=Paper 26.2 online=0 max=20 motd='Minecraft server'\n"
+          },
+          {
+            "Start": "2026-10-01T07:36:05.178352061Z",
+            "End": "2026-10-01T07:36:05.203310018Z",
+            "ExitCode": 0,
+            "Output": "localhost:25565 : version=Paper 26.2 online=0 max=20 motd='Minecraft server'\n"
+          },
+          {
+            "Start": "2026-10-01T07:36:15.204073336Z",
+            "End": "2026-10-01T07:36:15.22922864Z",
+            "ExitCode": 0,
+            "Output": "localhost:25565 : version=Paper 26.2 online=0 max=20 motd='Minecraft server'\n"
+          },
+          {
+            "Start": "2026-10-01T07:36:25.229784334Z",
+            "End": "2026-10-01T07:36:25.254614103Z",
+            "ExitCode": 0,
+            "Output": "localhost:25565 : version=Paper 26.2 online=0 max=20 motd='Minecraft server'\n"
+          },
+          {
+            "Start": "2026-10-01T07:36:35.255036251Z",
+            "End": "2026-10-01T07:36:35.294874231Z",
+            "ExitCode": 0,
+            "Output": "localhost:25565 : version=Paper 26.2 online=0 max=20 motd='Minecraft server'\n"
+          }
+        ]
+      }
+    },
+    "ports": {
+      "25565/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "35673"
+        }
+      ]
+    },
+    "heap": {
+      "MEMORY": "2G"
+    },
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/configs/server",
+        "destination": "/config",
+        "rw": false
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/data/server",
+        "destination": "/data",
+        "rw": true
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/plugins/server",
+        "destination": "/plugins",
+        "rw": false
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/.state/secrets/rcon",
+        "destination": "/run/secrets/rcon",
+        "rw": false
+      }
+    ]
+  },
+  {
+    "name": "minecraft-c56fd5f6-backup-1",
+    "image_reference": "minecraft-template-backup:3ff6a1e8fa15ca4e-1c6ea31fbca3",
+    "image_id": "sha256:651da33a96d3c7e07d82271e6a2170a68c94a19c7b6b22b414087edfae3dc5bd",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "ExitCode": 0,
+      "Health": null
+    },
+    "ports": {},
+    "heap": {},
+    "mounts": [
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/backups",
+        "destination": "/backups",
+        "rw": true
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/data/server",
+        "destination": "/data",
+        "rw": false
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/.state/secrets/rcon",
+        "destination": "/run/secrets/rcon",
+        "rw": false
+      },
+      {
+        "type": "bind",
+        "source": "/tmp/minecraft-one-prompt-0ampoe4d/.state/secrets/restic",
+        "destination": "/run/secrets/restic",
+        "rw": false
+      }
+    ]
+  }
+]

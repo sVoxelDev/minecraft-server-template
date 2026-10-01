@@ -1,0 +1,5 @@
+{
+  "exit": 1,
+  "output": "{\"error\": \"Unsupported validation client protocol for Minecraft 99.99. Update the client packet mapping before validating this version.\"}\n",
+  "passed": true
+}

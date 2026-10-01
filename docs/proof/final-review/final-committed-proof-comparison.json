@@ -1,0 +1,12 @@
+{
+  "compose.yaml": true,
+  "Dockerfile.backup": true,
+  "Dockerfile.backup.dockerignore": true,
+  "versions.env": true,
+  "scripts/check-versions": true,
+  "scripts/status": true,
+  "scripts/validate": true,
+  "scripts/minecraft": true,
+  "tests/login.py": true,
+  "tests/test_cli.py": true
+}

@@ -1,0 +1,26 @@
+{
+  "initial_candidate": "5cd63b7688058295198ac32a7f46062bf5d8c873",
+  "reviewed_followup": "1b6a5eea6e8684d871e76e7bdb53a3797c88b570",
+  "unchanged_runtime_files": {
+    "compose.yaml": true,
+    "Dockerfile.backup": true,
+    "Dockerfile.backup.dockerignore": true,
+    "versions.env": true,
+    "scripts/check-versions": true,
+    "scripts/status": true,
+    "scripts/minecraft": true,
+    "tests/login.py": true
+  },
+  "final_hashes": {
+    "compose.yaml": "a010a1d910d7c4faa48c3c78cfb6ad67d92449498b748c59df3729652d483a25",
+    "Dockerfile.backup": "1c6ea31fbca38c60cb9ab8480bb76128c6c3a4f31ca904084d400d285dc7be2d",
+    "Dockerfile.backup.dockerignore": "e0a0a575a7f69451eab7e5c28bfabd98bb15b7e6b86051d7f3c994480e830027",
+    "versions.env": "73dbd2e5b0813991ba35171e6899630da3f94774b0e1b5f6c59e48c2d70edcfc",
+    "scripts/check-versions": "1b17bea02f5b24b8b5959f0d3425284412ee02965ce2d887732b42887fb4e42a",
+    "scripts/status": "a326245845b7fa44831e4eb0e126614cb4a2d16aeec8d75b26ac5f526b35bcbd",
+    "scripts/minecraft": "3c8df527f3775fbd21ad0c438ad6b6ef66436493bc799622eb72eb0c4b5757b5",
+    "tests/login.py": "e92d086ab9e6284cae1147df0d04baba6bdbc93cb27ea4fc3a4e60acdc088004",
+    "scripts/validate": "b53e4b4f7f1dc890c029dcd99e479b40774286b410d9181195c396e61a5e16df",
+    "tests/test_cli.py": "52af676c46a5f6f5ea3d09a2e249aef23bcb54d1fbcccc57cc55854693e7da94"
+  }
+}

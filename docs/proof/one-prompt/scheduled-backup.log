@@ -1,0 +1,27 @@
+$ /tmp/minecraft-one-prompt-0ampoe4d/scripts/minecraft compose logs --tail 100 backup
+backup-1  | time="2026-10-01T07:35:35Z" level=info msg="Skipping uid/gid change since current user is not root"
+backup-1  | 2026-10-01T07:35:35+0000 INFO Initializing new restic repository...
+backup-1  | 2026-10-01T07:35:38+0000 INFO created restic repository aa64663ba2 at /backups/repository
+backup-1  | 2026-10-01T07:35:38+0000 INFO 
+backup-1  | 2026-10-01T07:35:38+0000 INFO Please note that knowledge of your password is required to access
+backup-1  | 2026-10-01T07:35:38+0000 INFO the repository. Losing your password means that your data is
+backup-1  | 2026-10-01T07:35:38+0000 INFO irrecoverably lost.
+backup-1  | 2026-10-01T07:35:38+0000 INFO waiting initial delay of 0...
+backup-1  | 2026-10-01T07:35:38+0000 INFO waiting for rcon readiness...
+backup-1  | 2026-10-01T07:35:38+0000 INFO Command executed successfully rcon-cli list
+backup-1  | 2026-10-01T07:35:38+0000 INFO Command executed successfully rcon-cli save-off
+backup-1  | 2026-10-01T07:35:38+0000 INFO Command executed successfully rcon-cli save-all flush
+backup-1  | 2026-10-01T07:35:38+0000 INFO Command executed successfully sync
+backup-1  | 2026-10-01T07:35:38+0000 INFO Backing up content in /data as host minecraft
+backup-1  | 2026-10-01T07:35:39+0000 INFO no parent snapshot found, will read all files
+backup-1  | 2026-10-01T07:35:39+0000 INFO 
+backup-1  | 2026-10-01T07:35:39+0000 INFO Files:         182 new,     0 changed,     0 unmodified
+backup-1  | 2026-10-01T07:35:39+0000 INFO Dirs:          309 new,     0 changed,     0 unmodified
+backup-1  | 2026-10-01T07:35:39+0000 INFO Added to the repository: 174.706 MiB (160.251 MiB stored)
+backup-1  | 2026-10-01T07:35:39+0000 INFO 
+backup-1  | 2026-10-01T07:35:39+0000 INFO processed 182 files, 174.543 MiB in 0:01
+backup-1  | 2026-10-01T07:35:39+0000 INFO snapshot bca2308a saved
+backup-1  | 2026-10-01T07:35:39+0000 INFO Command executed successfully rcon-cli save-on
+backup-1  | 2026-10-01T07:35:40+0000 INFO sleeping 6h...
+
+exit=0

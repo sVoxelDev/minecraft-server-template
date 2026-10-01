@@ -1,0 +1,182 @@
+[
+  {
+    "assertion": "26.2 Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "custom MOTD reached protocol",
+    "passed": true
+  },
+  {
+    "assertion": "Paper exact build",
+    "passed": true
+  },
+  {
+    "assertion": "Paper downloaded artifact checksum",
+    "passed": true
+  },
+  {
+    "assertion": "effective standalone authentication and query settings",
+    "passed": true
+  },
+  {
+    "assertion": "standalone requires account authentication",
+    "passed": true
+  },
+  {
+    "assertion": "wrong RCON password denied",
+    "passed": true
+  },
+  {
+    "assertion": "world survives container recreation",
+    "passed": true
+  },
+  {
+    "assertion": "encrypted snapshot created",
+    "passed": true
+  },
+  {
+    "assertion": "backup flushed world and resumed saves",
+    "passed": true
+  },
+  {
+    "assertion": "scheduled backup interval active",
+    "passed": true
+  },
+  {
+    "assertion": "backup failure is reported",
+    "passed": true
+  },
+  {
+    "assertion": "backup failure resumes automatic saving",
+    "passed": true
+  },
+  {
+    "assertion": "inner Restic failure returns nonzero with useful output",
+    "passed": true
+  },
+  {
+    "assertion": "inner Restic failure resumes saves",
+    "passed": true
+  },
+  {
+    "assertion": "first backup holds lock after flush",
+    "passed": true
+  },
+  {
+    "assertion": "second backup completed nonmutating readiness while first locked",
+    "passed": true
+  },
+  {
+    "assertion": "overlap cannot enable saving while first holds lock",
+    "passed": true
+  },
+  {
+    "assertion": "overlap-first succeeded",
+    "passed": true
+  },
+  {
+    "assertion": "overlap-second succeeded",
+    "passed": true
+  },
+  {
+    "assertion": "both overlapping backups resume saves",
+    "passed": true
+  },
+  {
+    "assertion": "26.2 Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "restored server contains snapshot world",
+    "passed": true
+  },
+  {
+    "assertion": "database authenticates and round trips data",
+    "passed": true
+  },
+  {
+    "assertion": "database survives recreation",
+    "passed": true
+  },
+  {
+    "assertion": "database wrong password denied",
+    "passed": true
+  },
+  {
+    "assertion": "optional web serves files",
+    "passed": true
+  },
+  {
+    "assertion": "26.3 Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "Vanilla RCON works",
+    "passed": true
+  },
+  {
+    "assertion": "Vanilla downloaded artifact checksum",
+    "passed": true
+  },
+  {
+    "assertion": "effective Vanilla authentication and query settings",
+    "passed": true
+  },
+  {
+    "assertion": "Velocity Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "literal Velocity MOTD reached protocol",
+    "passed": true
+  },
+  {
+    "assertion": "backend has no published port",
+    "passed": true
+  },
+  {
+    "assertion": "production Velocity online authentication",
+    "passed": true
+  },
+  {
+    "assertion": "forwarding secret reaches effective Paper config",
+    "passed": true
+  },
+  {
+    "assertion": "Velocity downloaded artifact checksum",
+    "passed": true
+  },
+  {
+    "assertion": "production proxy requires account authentication",
+    "passed": true
+  },
+  {
+    "assertion": "real client enters play through authenticated modern forwarding",
+    "passed": true
+  },
+  {
+    "assertion": "backend logged the real client join",
+    "passed": true
+  },
+  {
+    "assertion": "direct backend client denied without forwarding",
+    "passed": true
+  },
+  {
+    "assertion": "wrong forwarding secret denies client login",
+    "passed": true
+  },
+  {
+    "assertion": "production online authentication restored",
+    "passed": true
+  },
+  {
+    "assertion": "unrelated stable sentinel survives contaminated cleanup",
+    "passed": true
+  },
+  {
+    "assertion": "owned containers networks and volumes removed",
+    "passed": true
+  }
+]

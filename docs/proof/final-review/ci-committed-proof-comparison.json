@@ -1,0 +1,10 @@
+{
+  "summary.json": true,
+  "inventory-diff.json": true,
+  "cleanup.json": true,
+  "versions.env": true,
+  "commands.jsonl": true,
+  "overlap-first.log": true,
+  "assertions.json": true,
+  "overlap-second.log": true
+}

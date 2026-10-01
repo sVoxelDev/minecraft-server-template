@@ -1,0 +1,54 @@
+[
+  {
+    "assertion": "ambient variables cannot redirect effective identity or pins",
+    "passed": true
+  },
+  {
+    "assertion": "literal MOTD config survives quotes dollars unicode and markup",
+    "passed": true
+  },
+  {
+    "assertion": "server host networking rejected",
+    "passed": true
+  },
+  {
+    "assertion": "backup host networking rejected",
+    "passed": true
+  },
+  {
+    "assertion": "database host networking rejected",
+    "passed": true
+  },
+  {
+    "assertion": "unsupported protocol is rejected before socket connection",
+    "passed": true
+  },
+  {
+    "assertion": "first start uses the expected derived image",
+    "passed": true
+  },
+  {
+    "assertion": "changed base pin produces a new derived config tag despite stale settings.env",
+    "passed": true
+  },
+  {
+    "assertion": "public start builds/selects the new derived image and recreates sidecar",
+    "passed": true
+  },
+  {
+    "assertion": "derived image has the selected base layers and one patch layer",
+    "passed": true
+  },
+  {
+    "assertion": "actual selected image uses list readiness and retains save-on recovery",
+    "passed": true
+  },
+  {
+    "assertion": "public build fails closed for a base without the expected script seam",
+    "passed": true
+  },
+  {
+    "assertion": "independent fixture scoped containers removed",
+    "passed": true
+  }
+]

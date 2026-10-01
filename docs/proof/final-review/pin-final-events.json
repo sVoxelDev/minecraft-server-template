@@ -1,0 +1,318 @@
+[
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "setup",
+      "--accept-eula",
+      "--bind",
+      "127.0.0.1",
+      "--port",
+      "41259",
+      "--memory",
+      "2G",
+      "--profile",
+      "backup",
+      "--motd",
+      "<red>Literal \u2603 $HOME ${BACKUP_IMAGE} backslash \\' quote \\\\ tail"
+    ],
+    "exit": 0,
+    "output": "{\"distribution\": \"paper\", \"network\": false, \"profiles\": [\"backup\"], \"setup\": \"created\"}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "doctor"
+    ],
+    "exit": 1,
+    "output": "{\"error\": \"Unsafe network or privilege bypass for server\"}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "doctor"
+    ],
+    "exit": 1,
+    "output": "{\"error\": \"Unsafe network or privilege bypass for backup\"}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "doctor"
+    ],
+    "exit": 1,
+    "output": "{\"error\": \"Unsafe network or privilege bypass for database\"}\n"
+  },
+  {
+    "command": [
+      "python3",
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/tests/login.py",
+      "--version",
+      "99.99",
+      "--port",
+      "1"
+    ],
+    "exit": 1,
+    "output": "{\"error\": \"Unsupported validation client protocol for Minecraft 99.99. Update the client packet mapping before validating this version.\"}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "build",
+      "--progress",
+      "plain",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "--progress is a global compose flag, better use `docker compose --progress xx build ...\n Image minecraft-template-backup:3ff6a1e8fa15ca4e-1c6ea31fbca3 Building \n#1 [internal] load local bake definitions\n#1 reading from stdin 884B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile.backup\n#2 transferring dockerfile: 731B done\n#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BACKUP_IMAGE} results in empty or invalid base image name (line 2)\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\n#3 DONE 0.0s\n\n#4 [1/2] FROM docker.io/itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\n#4 resolve docker.io/itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16 0.0s done\n#4 DONE 0.0s\n\n#5 [2/2] RUN script=/opt/backup-loop.sh;     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on';     test \"$(grep -Fxc \"$expected\" \"$script\")\" -eq 2 &&     awk 'previous == \"    log INFO \\\"waiting for rcon readiness...\\\"\" { if ($0 != \"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\") exit 1; sub(/save-on$/, \"list\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \"$script\" > /tmp/backup-loop.patched &&     mv /tmp/backup-loop.patched \"$script\" && chmod +x \"$script\"\n#5 CACHED\n\n#6 exporting to image\n#6 exporting layers done\n#6 exporting manifest sha256:ccf582bcfa0143e59e89864ce860880770a7e1094fdec40cd2431fa532d5ce0a 0.0s done\n#6 exporting config sha256:2d1986c9e07727be2a6e28e88ccbc36a195ba77ae2a05a2fa1bc96cc7a8eff36 0.0s done\n#6 exporting attestation manifest sha256:ae6d6cdf735d3abbbb555ba8ab6458c3717d4d851df479fdbc39147f17193265 0.0s done\n#6 exporting manifest list sha256:45d3a426da1567cd0c22563e191c5ff1f05cd1aeefa706337b3edd96ded9e06a 0.0s done\n#6 naming to docker.io/library/minecraft-template-backup:3ff6a1e8fa15ca4e-1c6ea31fbca3 done\n#6 unpacking to docker.io/library/minecraft-template-backup:3ff6a1e8fa15ca4e-1c6ea31fbca3 done\n#6 DONE 0.1s\n\n#7 resolving provenance for metadata file\n#7 DONE 0.0s\n Image minecraft-template-backup:3ff6a1e8fa15ca4e-1c6ea31fbca3 Built \n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "start",
+      "--wait",
+      "240"
+    ],
+    "exit": 0,
+    "output": " Network minecraft-71dbba43_default Creating \n Network minecraft-71dbba43_default Creating \n Network minecraft-71dbba43_default Created \n Network minecraft-71dbba43_default Created \n Container minecraft-71dbba43-server-1 Creating \n Container minecraft-71dbba43-server-1 Created \n Container minecraft-71dbba43-backup-1 Creating \n Container minecraft-71dbba43-backup-1 Created \n Container minecraft-71dbba43-server-1 Starting \n Container minecraft-71dbba43-server-1 Started \n Container minecraft-71dbba43-server-1 Waiting \n Container minecraft-71dbba43-server-1 Healthy \n Container minecraft-71dbba43-backup-1 Starting \n Container minecraft-71dbba43-backup-1 Started \n Container minecraft-71dbba43-server-1 Waiting \n Container minecraft-71dbba43-backup-1 Waiting \n Container minecraft-71dbba43-backup-1 Healthy \n Container minecraft-71dbba43-server-1 Healthy \nThere are 0 of a max of 20 players online: \n{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n{\"ready\": true}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO created restic repository b647828902 at /backups/repository\nbackup-1  | 2026-10-01T07:43:51+0000 INFO \nbackup-1  | 2026-10-01T07:43:51+0000 INFO Please note that knowledge of your password is required to access\nbackup-1  | 2026-10-01T07:43:51+0000 INFO the repository. Losing your password means that your data is\nbackup-1  | 2026-10-01T07:43:51+0000 INFO irrecoverably lost.\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting initial delay of 0...\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO created restic repository b647828902 at /backups/repository\nbackup-1  | 2026-10-01T07:43:51+0000 INFO \nbackup-1  | 2026-10-01T07:43:51+0000 INFO Please note that knowledge of your password is required to access\nbackup-1  | 2026-10-01T07:43:51+0000 INFO the repository. Losing your password means that your data is\nbackup-1  | 2026-10-01T07:43:51+0000 INFO irrecoverably lost.\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting initial delay of 0...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting for rcon readiness...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli list\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-off\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-all flush\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully sync\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Backing up content in /data as host minecraft\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO created restic repository b647828902 at /backups/repository\nbackup-1  | 2026-10-01T07:43:51+0000 INFO \nbackup-1  | 2026-10-01T07:43:51+0000 INFO Please note that knowledge of your password is required to access\nbackup-1  | 2026-10-01T07:43:51+0000 INFO the repository. Losing your password means that your data is\nbackup-1  | 2026-10-01T07:43:51+0000 INFO irrecoverably lost.\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting initial delay of 0...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting for rcon readiness...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli list\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-off\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-all flush\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully sync\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Backing up content in /data as host minecraft\nbackup-1  | 2026-10-01T07:43:51+0000 INFO no parent snapshot found, will read all files\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO Files:         181 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Dirs:          310 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Added to the repository: 174.693 MiB (160.247 MiB stored)\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO processed 181 files, 174.551 MiB in 0:01\nbackup-1  | 2026-10-01T07:43:52+0000 INFO snapshot 30e0b5bf saved\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO created restic repository b647828902 at /backups/repository\nbackup-1  | 2026-10-01T07:43:51+0000 INFO \nbackup-1  | 2026-10-01T07:43:51+0000 INFO Please note that knowledge of your password is required to access\nbackup-1  | 2026-10-01T07:43:51+0000 INFO the repository. Losing your password means that your data is\nbackup-1  | 2026-10-01T07:43:51+0000 INFO irrecoverably lost.\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting initial delay of 0...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting for rcon readiness...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli list\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-off\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-all flush\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully sync\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Backing up content in /data as host minecraft\nbackup-1  | 2026-10-01T07:43:51+0000 INFO no parent snapshot found, will read all files\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO Files:         181 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Dirs:          310 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Added to the repository: 174.693 MiB (160.247 MiB stored)\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO processed 181 files, 174.551 MiB in 0:01\nbackup-1  | 2026-10-01T07:43:52+0000 INFO snapshot 30e0b5bf saved\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "logs",
+      "--no-color",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "backup-1  | time=\"2026-10-01T07:43:48Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\nbackup-1  | 2026-10-01T07:43:48+0000 INFO Initializing new restic repository...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO created restic repository b647828902 at /backups/repository\nbackup-1  | 2026-10-01T07:43:51+0000 INFO \nbackup-1  | 2026-10-01T07:43:51+0000 INFO Please note that knowledge of your password is required to access\nbackup-1  | 2026-10-01T07:43:51+0000 INFO the repository. Losing your password means that your data is\nbackup-1  | 2026-10-01T07:43:51+0000 INFO irrecoverably lost.\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting initial delay of 0...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO waiting for rcon readiness...\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli list\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-off\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully rcon-cli save-all flush\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Command executed successfully sync\nbackup-1  | 2026-10-01T07:43:51+0000 INFO Backing up content in /data as host minecraft\nbackup-1  | 2026-10-01T07:43:51+0000 INFO no parent snapshot found, will read all files\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO Files:         181 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Dirs:          310 new,     0 changed,     0 unmodified\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Added to the repository: 174.693 MiB (160.247 MiB stored)\nbackup-1  | 2026-10-01T07:43:52+0000 INFO \nbackup-1  | 2026-10-01T07:43:52+0000 INFO processed 181 files, 174.551 MiB in 0:01\nbackup-1  | 2026-10-01T07:43:52+0000 INFO snapshot 30e0b5bf saved\nbackup-1  | 2026-10-01T07:43:52+0000 INFO Command executed successfully rcon-cli save-on\nbackup-1  | 2026-10-01T07:43:53+0000 INFO sleeping 6h...\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "backup"
+    ],
+    "exit": 0,
+    "output": " Container minecraft-71dbba43-backup-run-169580c9b12b Creating \n Container minecraft-71dbba43-backup-run-169580c9b12b Created \ntime=\"2026-10-01T07:43:54Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:43:54+0000 INFO Repository already initialized\n2026-10-01T07:43:54+0000 INFO Checking for stale locks\n2026-10-01T07:43:55+0000 INFO Checking repo integrity\n2026-10-01T07:43:56+0000 INFO waiting initial delay of 0...\n2026-10-01T07:43:56+0000 INFO waiting for rcon readiness...\n2026-10-01T07:43:56+0000 INFO Command executed successfully rcon-cli list\n2026-10-01T07:43:56+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:43:56+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:43:56+0000 INFO Command executed successfully sync\n2026-10-01T07:43:56+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:43:56+0000 INFO using parent snapshot 30e0b5bf\n2026-10-01T07:43:56+0000 INFO \n2026-10-01T07:43:56+0000 INFO Files:           0 new,    12 changed,   169 unmodified\n2026-10-01T07:43:56+0000 INFO Dirs:            0 new,    16 changed,   294 unmodified\n2026-10-01T07:43:56+0000 INFO Added to the repository: 30.444 KiB (12.083 KiB stored)\n2026-10-01T07:43:56+0000 INFO \n2026-10-01T07:43:56+0000 INFO processed 181 files, 174.551 MiB in 0:00\n2026-10-01T07:43:56+0000 INFO snapshot 9386d526 saved\n2026-10-01T07:43:56+0000 INFO Command executed successfully rcon-cli save-on\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "ps",
+      "-q",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67\n"
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67"
+    ],
+    "exit": 0,
+    "output": "[\n    {\n        \"Id\": \"5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67\",\n        \"Created\": \"2026-10-01T07:43:27.359993701Z\",\n        \"Path\": \"/usr/bin/backup\",\n        \"Args\": [\n            \"loop\"\n        ],\n        \"State\": {\n            \"Status\": \"running\",\n            \"Running\": true,\n            \"Paused\": false,\n            \"Restarting\": false,\n            \"OOMKilled\": false,\n            \"Dead\": false,\n            \"Pid\": 1394628,\n            \"ExitCode\": 0,\n            \"Error\": \"\",\n            \"StartedAt\": \"2026-10-01T07:43:48.075956519Z\",\n            \"FinishedAt\": \"0001-01-01T00:00:00Z\"\n        },\n        \"Image\": \"sha256:45d3a426da1567cd0c22563e191c5ff1f05cd1aeefa706337b3edd96ded9e06a\",\n        \"ResolvConfPath\": \"/var/lib/docker/containers/5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67/resolv.conf\",\n        \"HostnamePath\": \"/var/lib/docker/containers/5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67/hostname\",\n        \"HostsPath\": \"/var/lib/docker/containers/5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67/hosts\",\n        \"LogPath\": \"/var/lib/docker/containers/5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67/5f34988b244b42578b21f01edbe40842fedf552d53a4e05eccaf934dffe54a67-json.log\",\n        \"Name\": \"/minecraft-71dbba43-backup-1\",\n        \"RestartCount\": 0,\n        \"Driver\": \"overlayfs\",\n        \"Platform\": \"linux\",\n        \"MountLabel\": \"\",\n        \"ProcessLabel\": \"\",\n        \"AppArmorProfile\": \"docker-default\",\n        \"ExecIDs\": null,\n        \"HostConfig\": {\n            \"Binds\": [\n                \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/data/server:/data:ro\",\n                \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/backups:/backups:rw\"\n            ],\n            \"ContainerIDFile\": \"\",\n            \"LogConfig\": {\n                \"Type\": \"json-file\",\n                \"Config\": {}\n            },\n            \"NetworkMode\": \"minecraft-71dbba43_default\",\n            \"PortBindings\": {},\n            \"RestartPolicy\": {\n                \"Name\": \"unless-stopped\",\n                \"MaximumRetryCount\": 0\n            },\n            \"AutoRemove\": false,\n            \"VolumeDriver\": \"\",\n            \"VolumesFrom\": null,\n            \"ConsoleSize\": [\n                0,\n                0\n            ],\n            \"CapAdd\": null,\n            \"CapDrop\": [\n                \"ALL\"\n            ],\n            \"CgroupnsMode\": \"private\",\n            \"Dns\": null,\n            \"DnsOptions\": null,\n            \"DnsSearch\": null,\n            \"ExtraHosts\": [],\n            \"GroupAdd\": null,\n            \"IpcMode\": \"private\",\n            \"Cgroup\": \"\",\n            \"Links\": null,\n            \"OomScoreAdj\": 0,\n            \"PidMode\": \"\",\n            \"Privileged\": false,\n            \"PublishAllPorts\": false,\n            \"ReadonlyRootfs\": false,\n            \"Sec\n[Publication excerpt; repetitive middle omitted.]\n \"com.docker.compose.project.environment_file\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/versions.env,/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/.state/settings.env\",\n                \"com.docker.compose.project.working_dir\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture\",\n                \"com.docker.compose.service\": \"backup\",\n                \"com.docker.compose.version\": \"5.5.1\",\n                \"org.opencontainers.image.created\": \"2026-09-30T18:56:38.561Z\",\n                \"org.opencontainers.image.description\": \"Provides a side-car container to backup itzg/minecraft-server server data\",\n                \"org.opencontainers.image.licenses\": \"MIT\",\n                \"org.opencontainers.image.revision\": \"4a02d7b8ffc37f678b5641389d303dade53191c4\",\n                \"org.opencontainers.image.source\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.title\": \"docker-mc-backup\",\n                \"org.opencontainers.image.url\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.version\": \"2026.9.3\"\n            }\n        },\n        \"NetworkSettings\": {\n            \"SandboxID\": \"fc2abd8224e18c17741ffcd018315cee0f556e2f46f83c20e6af569e94caba79\",\n            \"SandboxKey\": \"/var/run/docker/netns/fc2abd8224e1\",\n            \"Ports\": {},\n            \"Networks\": {\n                \"minecraft-71dbba43_default\": {\n                    \"IPAMConfig\": null,\n                    \"Links\": null,\n                    \"Aliases\": [\n                        \"minecraft-71dbba43-backup-1\",\n                        \"backup\"\n                    ],\n                    \"DriverOpts\": null,\n                    \"GwPriority\": 0,\n                    \"NetworkID\": \"0299f288ecb1a9d37307d8b51d1a600e0c8de8dbf0b3b2ec4e20dcee9b164887\",\n                    \"EndpointID\": \"86d650df3f0f771579b6c43d0ea5bfe6bcdd2147e7fe275186d7904ef01c262f\",\n                    \"Gateway\": \"172.21.0.1\",\n                    \"IPAddress\": \"172.21.0.3\",\n                    \"MacAddress\": \"8a:a4:45:63:25:06\",\n                    \"IPPrefixLen\": 16,\n                    \"IPv6Gateway\": \"\",\n                    \"GlobalIPv6Address\": \"\",\n                    \"GlobalIPv6PrefixLen\": 0,\n                    \"DNSNames\": [\n                        \"minecraft-71dbba43-backup-1\",\n                        \"backup\",\n                        \"5f34988b244b\"\n                    ]\n                }\n            }\n        },\n        \"ImageManifestDescriptor\": {\n            \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n            \"digest\": \"sha256:ccf582bcfa0143e59e89864ce860880770a7e1094fdec40cd2431fa532d5ce0a\",\n            \"size\": 3329,\n            \"platform\": {\n                \"architecture\": \"arm64\",\n                \"os\": \"linux\"\n            }\n        }\n    }\n]\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "start",
+      "--wait",
+      "240"
+    ],
+    "exit": 0,
+    "output": " Container minecraft-71dbba43-server-1 Running \n Container minecraft-71dbba43-backup-1 Recreate \n Container minecraft-71dbba43-backup-1 Recreated \n Container minecraft-71dbba43-server-1 Waiting \n Container minecraft-71dbba43-server-1 Healthy \n Container minecraft-71dbba43-backup-1 Starting \n Container minecraft-71dbba43-backup-1 Started \n Container minecraft-71dbba43-server-1 Waiting \n Container minecraft-71dbba43-backup-1 Waiting \n Container minecraft-71dbba43-backup-1 Healthy \n Container minecraft-71dbba43-server-1 Healthy \nThere are 0 of a max of 20 players online: \n{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n{\"ready\": true}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "ps",
+      "-q",
+      "backup"
+    ],
+    "exit": 0,
+    "output": "c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b\n"
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b"
+    ],
+    "exit": 0,
+    "output": "[\n    {\n        \"Id\": \"c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b\",\n        \"Created\": \"2026-10-01T07:43:58.678571661Z\",\n        \"Path\": \"/usr/bin/backup\",\n        \"Args\": [\n            \"loop\"\n        ],\n        \"State\": {\n            \"Status\": \"running\",\n            \"Running\": true,\n            \"Paused\": false,\n            \"Restarting\": false,\n            \"OOMKilled\": false,\n            \"Dead\": false,\n            \"Pid\": 1399506,\n            \"ExitCode\": 0,\n            \"Error\": \"\",\n            \"StartedAt\": \"2026-10-01T07:43:59.423849328Z\",\n            \"FinishedAt\": \"0001-01-01T00:00:00Z\"\n        },\n        \"Image\": \"sha256:3a535aeca089af7963aa60eda6dc2afae4a867609c186da3f8e89e32ecee3c1d\",\n        \"ResolvConfPath\": \"/var/lib/docker/containers/c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b/resolv.conf\",\n        \"HostnamePath\": \"/var/lib/docker/containers/c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b/hostname\",\n        \"HostsPath\": \"/var/lib/docker/containers/c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b/hosts\",\n        \"LogPath\": \"/var/lib/docker/containers/c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b/c84794a897cf745196cf0afbc8d739450dfde6d7b0a3beb66ec611642378c47b-json.log\",\n        \"Name\": \"/minecraft-71dbba43-backup-1\",\n        \"RestartCount\": 0,\n        \"Driver\": \"overlayfs\",\n        \"Platform\": \"linux\",\n        \"MountLabel\": \"\",\n        \"ProcessLabel\": \"\",\n        \"AppArmorProfile\": \"docker-default\",\n        \"ExecIDs\": null,\n        \"HostConfig\": {\n            \"Binds\": [\n                \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/backups:/backups:rw\",\n                \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/data/server:/data:ro\"\n            ],\n            \"ContainerIDFile\": \"\",\n            \"LogConfig\": {\n                \"Type\": \"json-file\",\n                \"Config\": {}\n            },\n            \"NetworkMode\": \"minecraft-71dbba43_default\",\n            \"PortBindings\": {},\n            \"RestartPolicy\": {\n                \"Name\": \"unless-stopped\",\n                \"MaximumRetryCount\": 0\n            },\n            \"AutoRemove\": false,\n            \"VolumeDriver\": \"\",\n            \"VolumesFrom\": null,\n            \"ConsoleSize\": [\n                0,\n                0\n            ],\n            \"CapAdd\": null,\n            \"CapDrop\": [\n                \"ALL\"\n            ],\n            \"CgroupnsMode\": \"private\",\n            \"Dns\": null,\n            \"DnsOptions\": null,\n            \"DnsSearch\": null,\n            \"ExtraHosts\": [],\n            \"GroupAdd\": null,\n            \"IpcMode\": \"private\",\n            \"Cgroup\": \"\",\n            \"Links\": null,\n            \"OomScoreAdj\": 0,\n            \"PidMode\": \"\",\n            \"Privileged\": false,\n            \"PublishAllPorts\": false,\n            \"ReadonlyRootfs\": false,\n            \"Sec\n[Publication excerpt; repetitive middle omitted.]\ner/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/versions.env,/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/.state/settings.env\",\n                \"com.docker.compose.project.working_dir\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture\",\n                \"com.docker.compose.replace\": \"backup-1\",\n                \"com.docker.compose.service\": \"backup\",\n                \"com.docker.compose.version\": \"5.5.1\",\n                \"org.opencontainers.image.created\": \"2026-09-30T18:56:38.561Z\",\n                \"org.opencontainers.image.description\": \"Provides a side-car container to backup itzg/minecraft-server server data\",\n                \"org.opencontainers.image.licenses\": \"MIT\",\n                \"org.opencontainers.image.revision\": \"4a02d7b8ffc37f678b5641389d303dade53191c4\",\n                \"org.opencontainers.image.source\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.title\": \"docker-mc-backup\",\n                \"org.opencontainers.image.url\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.version\": \"2026.9.3\"\n            }\n        },\n        \"NetworkSettings\": {\n            \"SandboxID\": \"026cdb7c1ac226857284f07143b31c3ad7eaa52845daca68922b772fb8cadf82\",\n            \"SandboxKey\": \"/var/run/docker/netns/026cdb7c1ac2\",\n            \"Ports\": {},\n            \"Networks\": {\n                \"minecraft-71dbba43_default\": {\n                    \"IPAMConfig\": null,\n                    \"Links\": null,\n                    \"Aliases\": [\n                        \"minecraft-71dbba43-backup-1\",\n                        \"backup\"\n                    ],\n                    \"DriverOpts\": null,\n                    \"GwPriority\": 0,\n                    \"NetworkID\": \"0299f288ecb1a9d37307d8b51d1a600e0c8de8dbf0b3b2ec4e20dcee9b164887\",\n                    \"EndpointID\": \"6a2993300affbb90eb26a78ab9ac0c57f21d9437653605574518f04f3a8f5b7a\",\n                    \"Gateway\": \"172.21.0.1\",\n                    \"IPAddress\": \"172.21.0.3\",\n                    \"MacAddress\": \"9a:17:e3:94:b4:c2\",\n                    \"IPPrefixLen\": 16,\n                    \"IPv6Gateway\": \"\",\n                    \"GlobalIPv6Address\": \"\",\n                    \"GlobalIPv6PrefixLen\": 0,\n                    \"DNSNames\": [\n                        \"minecraft-71dbba43-backup-1\",\n                        \"backup\",\n                        \"c84794a897cf\"\n                    ]\n                }\n            }\n        },\n        \"ImageManifestDescriptor\": {\n            \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n            \"digest\": \"sha256:9364ffed59a74e2c9e78f0a7b5a46ffd5788012f830e48d8f7fc34ad35fa61dc\",\n            \"size\": 3329,\n            \"platform\": {\n                \"architecture\": \"arm64\",\n                \"os\": \"linux\"\n            }\n        }\n    }\n]\n"
+  },
+  {
+    "command": [
+      "docker",
+      "pull",
+      "itzg/mc-backup:2026.9.3@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e"
+    ],
+    "exit": 0,
+    "output": "docker.io/itzg/mc-backup@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e: Pulling from itzg/mc-backup\nDigest: sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\nStatus: Image is up to date for itzg/mc-backup@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\ndocker.io/itzg/mc-backup:2026.9.3@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\n"
+  },
+  {
+    "command": [
+      "docker",
+      "image",
+      "inspect",
+      "itzg/mc-backup:2026.9.3@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e"
+    ],
+    "exit": 0,
+    "output": "[\n    {\n        \"Id\": \"sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\",\n        \"RepoTags\": [\n            \"itzg/mc-backup@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\"\n        ],\n        \"RepoDigests\": [\n            \"itzg/mc-backup@sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\"\n        ],\n        \"Comment\": \"buildkit.dockerfile.v0\",\n        \"Created\": \"2026-09-27T13:29:54.189552669Z\",\n        \"Config\": {\n            \"Env\": [\n                \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n                \"HOME=/tmp\"\n            ],\n            \"Entrypoint\": [\n                \"/usr/bin/backup\"\n            ],\n            \"Cmd\": [\n                \"loop\"\n            ],\n            \"Volumes\": {\n                \"/backups\": {},\n                \"/data\": {}\n            },\n            \"WorkingDir\": \"/backups\",\n            \"Labels\": {\n                \"org.opencontainers.image.created\": \"2026-09-30T18:56:38.561Z\",\n                \"org.opencontainers.image.description\": \"Provides a side-car container to backup itzg/minecraft-server server data\",\n                \"org.opencontainers.image.licenses\": \"MIT\",\n                \"org.opencontainers.image.revision\": \"4a02d7b8ffc37f678b5641389d303dade53191c4\",\n                \"org.opencontainers.image.source\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.title\": \"docker-mc-backup\",\n                \"org.opencontainers.image.url\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.version\": \"2026.9.3\"\n            },\n            \"ArgsEscaped\": true\n        },\n        \"Architecture\": \"arm64\",\n        \"Os\": \"linux\",\n        \"Size\": 204693685,\n        \"RootFS\": {\n            \"Type\": \"layers\",\n            \"Layers\": [\n                \"sha256:1b349a3334531b575b01d409540dd8aca14ef29abddacd50f36643d7c949db4b\",\n                \"sha256:7dcd34286a5afa9e661d51008370e79c7217bd1c5880686d8a69ed8bb9850fa3\",\n                \"sha256:7a2e9ffbb255c4f4e718444f0a8fc7dac2c3b18581f35bfefeb356b373c9c38f\",\n                \"sha256:a3c11cd888dedfb8b9123d5b0ea5d9771c422162d8e942c291b40b1aa10dbff9\",\n                \"sha256:686ec6fc17370c51b838fdec45d0a9e110730cda30ab8a60fd2aafcb1ba33371\",\n                \"sha256:44a91badb071b0e82f24cb462ae161784435b6c370f1bcd29f3516af6a6f81c4\",\n                \"sha256:49e9e78dca24eda50907b65f5246a2a7b8d0a37aa8ac063db2e307a7898d942a\",\n                \"sha256:afa073886d330f586f7b10b15d9c488a0eaffcd11a50bce8ff4d269d17788c04\",\n                \"sha256:fcbe4169802a925d3f6f792b6fa0edd1183ef889b14da36408ed8b33537486f7\",\n                \"sha256:b4c77a8b8ea3b83da27a61163084d8a7bd0a5a42a9a94dd6c73a0b970e6d957d\",\n                \"sha256:57d8cd0f05aa36e5da74185aa0368865d82580d9f83bd51dd5970e6152e10085\",\n                \"sha256:c8e84cd477e5f438693247ef7e36dd2ade49208264ec21edfda07998efab2bfc\",\n                \"sha256:2aa92a38476f4287d1edec21033a8956870db00b307a03f5c026937be6c98281\",\n                \"sha256:0cad5a5868b67e0fa92a0d77719b862e5965369690ddbca778427e2992e59ab9\",\n                \"sha256:34a912e71c8eeb038d277eaba9a1a5098ebf5f480c5f0a6d559c8a7421f824d5\"\n            ]\n        },\n        \"Metadata\": {\n            \"LastTagTime\": \"2026-10-01T07:44:00.643752856Z\"\n        },\n        \"Descriptor\": {\n            \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n            \"digest\": \"sha256:3195676d141fd8afcda317033bf2fd7e09d34f36d0805118f50afa9e4063783e\",\n            \"size\": 3140\n        },\n        \"Identity\": {\n            \"Pull\": [\n                {\n                    \"Repository\": \"docker.io/itzg/mc-backup\"\n                }\n            ]\n        }\n    }\n]\n"
+  },
+  {
+    "command": [
+      "docker",
+      "image",
+      "inspect",
+      "minecraft-template-backup:3195676d141fd8af-1c6ea31fbca3"
+    ],
+    "exit": 0,
+    "output": "[\n    {\n        \"Id\": \"sha256:3a535aeca089af7963aa60eda6dc2afae4a867609c186da3f8e89e32ecee3c1d\",\n        \"RepoTags\": [\n            \"minecraft-template-backup:3195676d141fd8af-1c6ea31fbca3\"\n        ],\n        \"RepoDigests\": [\n            \"minecraft-template-backup@sha256:3a535aeca089af7963aa60eda6dc2afae4a867609c186da3f8e89e32ecee3c1d\"\n        ],\n        \"Comment\": \"buildkit.dockerfile.v0\",\n        \"Created\": \"2026-10-01T07:19:28.891893344Z\",\n        \"Config\": {\n            \"Env\": [\n                \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n                \"HOME=/tmp\"\n            ],\n            \"Entrypoint\": [\n                \"/usr/bin/backup\"\n            ],\n            \"Cmd\": [\n                \"loop\"\n            ],\n            \"Volumes\": {\n                \"/backups\": {},\n                \"/data\": {}\n            },\n            \"WorkingDir\": \"/backups\",\n            \"Labels\": {\n                \"com.docker.compose.project\": \"minecraft-394cd3cb\",\n                \"com.docker.compose.service\": \"backup\",\n                \"com.docker.compose.version\": \"5.5.1\",\n                \"org.opencontainers.image.created\": \"2026-09-30T18:56:38.561Z\",\n                \"org.opencontainers.image.description\": \"Provides a side-car container to backup itzg/minecraft-server server data\",\n                \"org.opencontainers.image.licenses\": \"MIT\",\n                \"org.opencontainers.image.revision\": \"4a02d7b8ffc37f678b5641389d303dade53191c4\",\n                \"org.opencontainers.image.source\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.title\": \"docker-mc-backup\",\n                \"org.opencontainers.image.url\": \"https://github.com/itzg/docker-mc-backup\",\n                \"org.opencontainers.image.version\": \"2026.9.3\"\n            },\n            \"ArgsEscaped\": true\n        },\n        \"Architecture\": \"arm64\",\n        \"Os\": \"linux\",\n        \"Size\": 204738892,\n        \"RootFS\": {\n            \"Type\": \"layers\",\n            \"Layers\": [\n                \"sha256:1b349a3334531b575b01d409540dd8aca14ef29abddacd50f36643d7c949db4b\",\n                \"sha256:7dcd34286a5afa9e661d51008370e79c7217bd1c5880686d8a69ed8bb9850fa3\",\n                \"sha256:7a2e9ffbb255c4f4e718444f0a8fc7dac2c3b18581f35bfefeb356b373c9c38f\",\n                \"sha256:a3c11cd888dedfb8b9123d5b0ea5d9771c422162d8e942c291b40b1aa10dbff9\",\n                \"sha256:686ec6fc17370c51b838fdec45d0a9e110730cda30ab8a60fd2aafcb1ba33371\",\n                \"sha256:44a91badb071b0e82f24cb462ae161784435b6c370f1bcd29f3516af6a6f81c4\",\n                \"sha256:49e9e78dca24eda50907b65f5246a2a7b8d0a37aa8ac063db2e307a7898d942a\",\n                \"sha256:afa073886d330f586f7b10b15d9c488a0eaffcd11a50bce8ff4d269d17788c04\",\n                \"sha256:fcbe4169802a925d3f6f792b6fa0edd1183ef889b14da36408ed8b33537486f7\",\n                \"sha256:b4c77a8b8ea3b83da27a61163084d8a7bd0a5a42a9a94dd6c73a0b970e6d957d\",\n                \"sha256:57d8cd0f05aa36e5da74185aa0368865d82580d9f83bd51dd5970e6152e10085\",\n                \"sha256:c8e84cd477e5f438693247ef7e36dd2ade49208264ec21edfda07998efab2bfc\",\n                \"sha256:2aa92a38476f4287d1edec21033a8956870db00b307a03f5c026937be6c98281\",\n                \"sha256:0cad5a5868b67e0fa92a0d77719b862e5965369690ddbca778427e2992e59ab9\",\n                \"sha256:34a912e71c8eeb038d277eaba9a1a5098ebf5f480c5f0a6d559c8a7421f824d5\",\n                \"sha256:f28ddb0219aa07f6b1df873657ea0db949af84466deac8db8abc68a8303abde6\"\n            ]\n        },\n        \"Metadata\": {\n            \"LastTagTime\": \"2026-10-01T07:37:22.831481444Z\"\n        },\n        \"Descriptor\": {\n            \"mediaType\": \"application/vnd.oci.image.index.v1+json\",\n            \"digest\": \"sha256:3a535aeca089af7963aa60eda6dc2afae4a867609c186da3f8e89e32ecee3c1d\",\n            \"size\": 856\n        },\n        \"Identity\": {\n            \"Build\": [\n                {\n                    \"Ref\": \"y7e54k2wrlpjps8bih0tgupqt\",\n                    \"CreatedAt\": \"2026-10-01T07:37:22.858142809Z\"\n                }\n            ]\n        }\n    }\n]\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "exec",
+      "-T",
+      "backup",
+      "sh",
+      "-c",
+      "grep -A1 \"waiting for rcon readiness\" /opt/backup-loop.sh; grep -Fc \"rcon-cli save-on\" /opt/backup-loop.sh"
+    ],
+    "exit": 0,
+    "output": "    log INFO \"waiting for rcon readiness...\"\n    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli list\n2\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "backup"
+    ],
+    "exit": 0,
+    "output": " Container minecraft-71dbba43-backup-run-fae1c6a69f18 Creating \n Container minecraft-71dbba43-backup-run-fae1c6a69f18 Created \ntime=\"2026-10-01T07:44:01Z\" level=info msg=\"Skipping uid/gid change since current user is not root\"\n2026-10-01T07:44:02+0000 INFO Repository already initialized\n2026-10-01T07:44:02+0000 INFO Checking for stale locks\n2026-10-01T07:44:02+0000 INFO Checking repo integrity\n2026-10-01T07:44:03+0000 INFO waiting initial delay of 0...\n2026-10-01T07:44:03+0000 INFO waiting for rcon readiness...\n2026-10-01T07:44:03+0000 INFO Command executed successfully rcon-cli list\n2026-10-01T07:44:03+0000 INFO Command executed successfully rcon-cli save-off\n2026-10-01T07:44:03+0000 INFO Command executed successfully rcon-cli save-all flush\n2026-10-01T07:44:03+0000 INFO Command executed successfully sync\n2026-10-01T07:44:03+0000 INFO Backing up content in /data as host minecraft\n2026-10-01T07:44:04+0000 INFO using parent snapshot ee34d47c\n2026-10-01T07:44:04+0000 INFO \n2026-10-01T07:44:04+0000 INFO Files:           0 new,    12 changed,   169 unmodified\n2026-10-01T07:44:04+0000 INFO Dirs:            0 new,    16 changed,   294 unmodified\n2026-10-01T07:44:04+0000 INFO Added to the repository: 30.444 KiB (12.115 KiB stored)\n2026-10-01T07:44:04+0000 INFO \n2026-10-01T07:44:04+0000 INFO processed 181 files, 174.551 MiB in 0:00\n2026-10-01T07:44:04+0000 INFO snapshot 1ad70775 saved\n2026-10-01T07:44:04+0000 INFO Command executed successfully rcon-cli save-on\n2026-10-01T07:44:05+0000 INFO Pruning snapshots using --keep-daily 7 --keep-weekly 4 --keep-monthly 6\n2026-10-01T07:44:05+0000 INFO Applying Policy: keep 7 daily, 4 weekly, 6 monthly snapshots\n2026-10-01T07:44:05+0000 INFO keep 2 snapshots:\n2026-10-01T07:44:05+0000 INFO ID        Time                 Host        Tags               Reasons                  Paths  Size\n2026-10-01T07:44:05+0000 INFO ---------------------------------------------------------------------------------------------------------\n2026-10-01T07:44:05+0000 INFO 30e0b5bf  2026-10-01 07:43:51  minecraft   mc_backups,server  oldest daily snapshot    /data  174.551 MiB\n2026-10-01T07:44:05+0000 INFO                                                               oldest weekly snapshot\n2026-10-01T07:44:05+0000 INFO                                                               oldest monthly snapshot\n2026-10-01T07:44:05+0000 INFO 1ad70775  2026-10-01 07:44:03  minecraft   mc_backups,server  daily snapshot           /data  174.551 MiB\n2026-10-01T07:44:05+0000 INFO                                                               weekly snapshot\n2026-10-01T07:44:05+0000 INFO                                                               monthly snapshot\n2026-10-01T07:44:05+0000 INFO ---------------------------------------------------------------------------------------------------------\n2026-10-01T07:44:05+0000 INFO Timestamps shown in Etc/UTC\n2026-10-01T07:44:05+0000 INFO 2 snapshots\n2026-10-01T07:44:05+0000 INFO \n2026-10-01T07:44:05+0000 INFO remove 1 snapshots:\n2026-10-01T07:44:05+0000 INFO ID        Time                 Host        Tags               Paths  Size\n2026-10-01T07:44:05+0000 INFO --------------------------------------------------------------------------------\n2026-10-01T07:44:05+0000 INFO ee34d47c  2026-10-01 07:44:01  minecraft   mc_backups,server  /data  174.551 MiB\n2026-10-01T07:44:05+0000 INFO --------------------------------------------------------------------------------\n2026-10-01T07:44:05+0000 INFO Timestamps shown in Etc/UTC\n2026-10-01T07:44:05+0000 INFO 1 snapshots\n2026-10-01T07:44:05+0000 INFO \n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  1 / 1 files deleted\n2026-10-01T07:44:05+0000 INFO 1 snapshots have been removed, running prune\n2026-10-01T07:44:05+0000 INFO loading all snapshots...\n2026-10-01T07:44:05+0000 INFO finding data that is still in use for 2 snapshots\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  2 / 2 snapshots\n2026-10-01T07:44:05+0000 INFO searching used packs...\n2026-10-01T07:44:05+0000 INFO collecting packs for deletion and repacking\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  16 / 16 packs processed\n2026-10-01T07:44:05+0000 INFO \n2026-10-01T07:44:05+0000 INFO to repack:             7 blobs / 1.798 KiB\n2026-10-01T07:44:05+0000 INFO this removes:          5 blobs / 902 B\n2026-10-01T07:44:05+0000 INFO to delete:            18 blobs / 10.284 KiB\n2026-10-01T07:44:05+0000 INFO total prune:          23 blobs / 11.165 KiB\n2026-10-01T07:44:05+0000 INFO remaining:           597 blobs / 160.236 MiB\n2026-10-01T07:44:05+0000 INFO unused size after prune: 0 B (0.00% of remaining size)\n2026-10-01T07:44:05+0000 INFO \n2026-10-01T07:44:05+0000 INFO repacking packs\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  1 / 1 packs repacked\n2026-10-01T07:44:05+0000 INFO rebuilding index\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  3 / 3 indexes processed\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  3 / 3 old indexes deleted\n2026-10-01T07:44:05+0000 INFO removing 3 old packs\n2026-10-01T07:44:05+0000 INFO [0:00] 100.00%  3 / 3 files deleted\n2026-10-01T07:44:05+0000 INFO done\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "stop"
+    ],
+    "exit": 0,
+    "output": " Container minecraft-71dbba43-backup-1 Stopping \n Container minecraft-71dbba43-backup-1 Stopped \n Container minecraft-71dbba43-backup-1 Removing \n Container minecraft-71dbba43-backup-1 Removed \n Container minecraft-71dbba43-server-1 Stopping \n Container minecraft-71dbba43-server-1 Stopped \n Container minecraft-71dbba43-server-1 Removing \n Container minecraft-71dbba43-server-1 Removed \n Network minecraft-71dbba43_default Removing \n Network minecraft-71dbba43_default Removed \n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "build",
+      "--progress",
+      "plain",
+      "backup"
+    ],
+    "exit": 1,
+    "output": "--progress is a global compose flag, better use `docker compose --progress xx build ...\n Image minecraft-template-backup:0985e772fb9f729e-1c6ea31fbca3 Building \n#1 [internal] load local bake definitions\n#1 reading from stdin 880B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile.backup\n#2 transferring dockerfile: 731B done\n#2 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BACKUP_IMAGE} results in empty or invalid base image name (line 2)\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\n#3 DONE 0.0s\n\n#4 [1/2] FROM docker.io/library/nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\n#4 resolve docker.io/library/nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94 0.0s done\n#4 DONE 0.0s\n\n#4 [1/2] FROM docker.io/library/nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\n#4 DONE 0.2s\n\n#5 [2/2] RUN script=/opt/backup-loop.sh;     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on';     test \"$(grep -Fxc \"$expected\" \"$script\")\" -eq 2 &&     awk 'previous == \"    log INFO \\\"waiting for rcon readiness...\\\"\" { if ($0 != \"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\") exit 1; sub(/save-on$/, \"list\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \"$script\" > /tmp/backup-loop.patched &&     mv /tmp/backup-loop.patched \"$script\" && chmod +x \"$script\"\n#5 0.140 grep: /opt/backup-loop.sh: No such file or directory\n#5 0.140 sh: out of range\n#5 ERROR: process \"/bin/sh -c script=/opt/backup-loop.sh;     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on';     test \\\"$(grep -Fxc \\\"$expected\\\" \\\"$script\\\")\\\" -eq 2 &&     awk 'previous == \\\"    log INFO \\\\\\\"waiting for rcon readiness...\\\\\\\"\\\" { if ($0 != \\\"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\\\") exit 1; sub(/save-on$/, \\\"list\\\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \\\"$script\\\" > /tmp/backup-loop.patched &&     mv /tmp/backup-loop.patched \\\"$script\\\" && chmod +x \\\"$script\\\"\" did not complete successfully: exit code: 2\n------\n > [2/2] RUN script=/opt/backup-loop.sh;     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on';     test \"$(grep -Fxc \"$expected\" \"$script\")\" -eq 2 &&     awk 'previous == \"    log INFO \\\"waiting for rcon readiness...\\\"\" { if ($0 != \"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\") exit 1; sub(/save-on$/, \"list\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \"$script\" > /tmp/backup-loop.patched &&     mv /tmp/backup-loop.patched \"$script\" && chmod +x \"$script\":\n0.140 grep: /opt/backup-loop.sh: No such file or directory\n0.140 sh: out of range\n------\nDockerfile.backup:3\n\n--------------------\n\n   2 |     FROM ${BACKUP_IMAGE}\n\n   3 | >>> RUN script=/opt/backup-loop.sh; \\\n\n   4 | >>>     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on'; \\\n\n   5 | >>>     test \"$(grep -Fxc \"$expected\" \"$script\")\" -eq 2 && \\\n\n   6 | >>>     awk 'previous == \"    log INFO \\\"waiting for rcon readiness...\\\"\" { if ($0 != \"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\") exit 1; sub(/save-on$/, \"list\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \"$script\" > /tmp/backup-loop.patched && \\\n\n   7 | >>>     mv /tmp/backup-loop.patched \"$script\" && chmod +x \"$script\"\n\n   8 |     \n\n--------------------\n\nfailed to solve: process \"/bin/sh -c script=/opt/backup-loop.sh;     expected='    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on';     test \\\"$(grep -Fxc \\\"$expected\\\" \\\"$script\\\")\\\" -eq 2 &&     awk 'previous == \\\"    log INFO \\\\\\\"waiting for rcon readiness...\\\\\\\"\\\" { if ($0 != \\\"    retry ${RCON_RETRIES} ${RCON_RETRY_INTERVAL} rcon-cli save-on\\\") exit 1; sub(/save-on$/, \\\"list\\\"); changed++ } { print; previous=$0 } END { if (changed != 1) exit 1 }' \\\"$script\\\" > /tmp/backup-loop.patched &&     mv /tmp/backup-loop.patched \\\"$script\\\" && chmod +x \\\"$script\\\"\" did not complete successfully: exit code: 2\n\n{\"error\": \"Command '['docker', 'compose', '--project-name', 'minecraft-71dbba43', '--project-directory', '/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture', '--env-file', '/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/versions.env', '--env-file', '/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/.state/settings.env', '-f', '/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/compose.yaml', '-f', '/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/.state/compose.yaml', 'build', '--progress', 'plain', 'backup']' returned non-zero exit status 1.\"}\n"
+  },
+  {
+    "command": [
+      "/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/pin-transition-stable-fixture/scripts/minecraft",
+      "compose",
+      "down",
+      "--volumes",
+      "--remove-orphans"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "docker",
+      "ps",
+      "-aq",
+      "--filter",
+      "label=com.docker.compose.project=minecraft-71dbba43"
+    ],
+    "exit": 0,
+    "output": ""
+  }
+]

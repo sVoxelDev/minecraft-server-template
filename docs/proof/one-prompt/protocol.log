@@ -1,0 +1,4 @@
+$ /tmp/minecraft-one-prompt-0ampoe4d/scripts/status --host 127.0.0.1 --port 35673
+{"description": "Minecraft server", "enforcesSecureChat": true, "players": {"max": 20, "online": 0}, "version": {"name": "Paper 26.2", "protocol": 776}}
+
+exit=0

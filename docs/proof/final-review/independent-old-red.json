@@ -1,0 +1,46 @@
+{
+  "reviewed_old_commit": "7cf68b9",
+  "checks": {
+    "ambient_project_guard_passed": false,
+    "ambient_image_guard_passed": false,
+    "host_network_guard_passed": false,
+    "proxy_motd_passed": false
+  },
+  "events": [
+    {
+      "args": [
+        "setup",
+        "--accept-eula",
+        "--network",
+        "--motd",
+        "Independent custom lobby"
+      ],
+      "exit": 0,
+      "output": "{\"distribution\": \"paper\", \"network\": true, \"profiles\": [\"proxy\"], \"setup\": \"created\"}\n"
+    },
+    {
+      "args": [
+        "compose",
+        "config",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "output": "{\n  \"name\": \"foreign-red-proof\",\n  \"networks\": {\n    \"default\": {\n      \"name\": \"foreign-red-proof_default\",\n      \"ipam\": {}\n    }\n  },\n  \"secrets\": {\n    \"rcon\": {\n      \"name\": \"foreign-red-proof_rcon\",\n      \"file\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/.state/secrets/rcon\"\n    }\n  },\n  \"services\": {\n    \"proxy\": {\n      \"profiles\": [\n        \"proxy\"\n      ],\n      \"cap_drop\": [\n        \"ALL\"\n      ],\n      \"command\": null,\n      \"depends_on\": {\n        \"server\": {\n          \"condition\": \"service_healthy\",\n          \"required\": true\n        }\n      },\n      \"entrypoint\": null,\n      \"environment\": {\n        \"ENABLE_RCON\": \"false\",\n        \"MEMORY\": \"512M\",\n        \"SKIP_DOWNLOAD_DEFAULTS\": \"true\",\n        \"TYPE\": \"VELOCITY\",\n        \"VELOCITY_BUILD_ID\": \"36\",\n        \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\"\n      },\n      \"healthcheck\": {\n        \"test\": [\n          \"CMD\",\n          \"mc-monitor\",\n          \"status\",\n          \"--host\",\n          \"localhost\",\n          \"--port\",\n          \"25565\"\n        ],\n        \"timeout\": \"10s\",\n        \"interval\": \"10s\",\n        \"retries\": 12\n      },\n      \"image\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\",\n      \"mem_limit\": \"1073741824\",\n      \"networks\": {\n        \"default\": null\n      },\n      \"ports\": [\n        {\n          \"mode\": \"ingress\",\n          \"host_ip\": \"0.0.0.0\",\n          \"target\": 25565,\n          \"published\": \"25565\",\n          \"protocol\": \"tcp\"\n        }\n      ],\n      \"restart\": \"unless-stopped\",\n      \"security_opt\": [\n        \"no-new-privileges:true\"\n      ],\n      \"stop_grace_period\": \"30s\",\n      \"user\": \"1001:1002\",\n      \"volumes\": [\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/data/proxy\",\n          \"target\": \"/server\",\n          \"bind\": {}\n        },\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/.state/velocity.toml\",\n          \"target\": \"/server/velocity.toml\",\n          \"bind\": {}\n        },\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/.state/secrets/forwarding\",\n          \"target\": \"/server/forwarding.secret\",\n          \"read_only\": true,\n          \"bind\": {}\n        },\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/plugins/proxy\",\n          \"target\": \"/plugins\",\n          \"read_only\": true,\n          \"bind\": {}\n        }\n      ]\n    },\n    \"server\": {\n      \"cap_drop\": [\n        \"ALL\"\n      ],\n      \"command\": null,\n      \"entrypoint\": null,\n      \"environment\": {\n        \"COPY_CONFIG_DEST\": \"/data\",\n        \"ENABLE_QUERY\": \"false\",\n        \"ENABLE_RCON\": \"true\",\n        \"EULA\": \"TRUE\",\n        \"MEMORY\": \"2G\",\n        \"MOTD\": \"Independent custom lobby\",\n        \"ONLINE_MODE\": \"false\",\n        \"PAPER_BUILD\": \"129\",\n        \"PAUSE_WHEN_EMPTY_SECONDS\": \"-1\",\n        \"RCON_PASSWORD_FILE\": \"/run/secrets/rcon\",\n        \"SIMULATION_DISTANCE\": \"4\",\n        \"SKIP_DOWNLOAD_DEFAULTS\": \"true\",\n        \"SYNC_SKIP_NEWER_IN_DESTINATION\": \"false\",\n        \"TYPE\": \"PAPER\",\n        \"VERSION\": \"26.2\",\n        \"VIEW_DISTANCE\": \"6\"\n      },\n      \"healthcheck\": {\n        \"test\": [\n          \"CMD\",\n          \"mc-health\"\n        ],\n        \"timeout\": \"10s\",\n        \"interval\": \"10s\",\n        \"retries\": 30,\n        \"start_period\": \"1m0s\"\n      },\n      \"image\": \"nginx:alpine\",\n      \"mem_limit\": \"3221225472\",\n      \"networks\": {\n        \"default\": null\n      },\n      \"restart\": \"unless-stopped\",\n      \"secrets\": [\n        {\n          \"source\": \"rcon\",\n          \"target\": \"/run/secrets/rcon\"\n        }\n      ],\n      \"security_opt\": [\n        \"no-new-privileges:true\"\n      ],\n      \"stop_grace_period\": \"2m0s\",\n      \"user\": \"1001:1002\",\n      \"volumes\": [\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/data/server\",\n          \"target\": \"/data\",\n          \"bind\": {}\n        },\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/configs/server\",\n          \"target\": \"/config\",\n          \"read_only\": true,\n          \"bind\": {}\n        },\n        {\n          \"type\": \"bind\",\n          \"source\": \"/home/coder/dev/minecraft-server-template/.git/wayfinder/logs/final-review-evidence/old-review-fixture/plugins/server\",\n          \"target\": \"/plugins\",\n          \"read_only\": true,\n          \"bind\": {}\n        }\n      ]\n    }\n  }\n}"
+    },
+    {
+      "args": [
+        "doctor"
+      ],
+      "exit": 0,
+      "output": "{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n"
+    },
+    {
+      "args": [
+        "doctor"
+      ],
+      "exit": 0,
+      "output": "{\"architecture\": \"arm64\", \"compose\": \"5.5.1\", \"configuration\": \"valid\", \"docker\": \"29.8.0\", \"pins\": {\"BACKUP_IMAGE\": \"itzg/mc-backup:2026.9.3@sha256:3ff6a1e8fa15ca4e4440b118676cf58c611a4079d4da8fe792b04a9a13619f16\", \"DATABASE_IMAGE\": \"mariadb:12.3.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1\", \"PAPER_BUILD\": \"129\", \"PAPER_SHA256\": \"b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083\", \"PAPER_VERSION\": \"26.2\", \"PROXY_IMAGE\": \"itzg/mc-proxy:2026.9.2-java25@sha256:f95e6c0364a6be9ff983208943c807da70d584d935b25a23b605966a71f33411\", \"SERVER_IMAGE\": \"itzg/minecraft-server:2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e\", \"VANILLA_SERVER_SHA1\": \"33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c\", \"VANILLA_VERSION\": \"26.3\", \"VELOCITY_BUILD_ID\": \"36\", \"VELOCITY_SHA256\": \"62a06a6bbf3c48b72473ac64a1bdea38e940b82780a99998e83b42d34022b42c\", \"VELOCITY_VERSION\": \"4.2.1-SNAPSHOT\", \"WEB_IMAGE\": \"nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94\"}}\n"
+    }
+  ]
+}

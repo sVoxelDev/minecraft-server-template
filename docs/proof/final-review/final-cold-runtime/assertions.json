@@ -1,0 +1,58 @@
+[
+  {
+    "assertion": "Velocity Minecraft status",
+    "passed": true
+  },
+  {
+    "assertion": "literal Velocity MOTD reached protocol",
+    "passed": true
+  },
+  {
+    "assertion": "backend has no published port",
+    "passed": true
+  },
+  {
+    "assertion": "production Velocity online authentication",
+    "passed": true
+  },
+  {
+    "assertion": "forwarding secret reaches effective Paper config",
+    "passed": true
+  },
+  {
+    "assertion": "Velocity downloaded artifact checksum",
+    "passed": true
+  },
+  {
+    "assertion": "production proxy requires account authentication",
+    "passed": true
+  },
+  {
+    "assertion": "real client enters play through authenticated modern forwarding",
+    "passed": true
+  },
+  {
+    "assertion": "backend logged the real client join",
+    "passed": true
+  },
+  {
+    "assertion": "direct backend client denied without forwarding",
+    "passed": true
+  },
+  {
+    "assertion": "wrong forwarding secret denies client login",
+    "passed": true
+  },
+  {
+    "assertion": "production online authentication restored",
+    "passed": true
+  },
+  {
+    "assertion": "unrelated stable sentinel survives contaminated cleanup",
+    "passed": true
+  },
+  {
+    "assertion": "owned containers networks and volumes removed",
+    "passed": true
+  }
+]

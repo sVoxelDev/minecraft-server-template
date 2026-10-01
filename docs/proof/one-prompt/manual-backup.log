@@ -1,0 +1,25 @@
+$ /tmp/minecraft-one-prompt-0ampoe4d/scripts/minecraft backup
+ Container minecraft-c56fd5f6-backup-run-851a9138e881 Creating 
+ Container minecraft-c56fd5f6-backup-run-851a9138e881 Created 
+time="2026-10-01T07:36:36Z" level=info msg="Skipping uid/gid change since current user is not root"
+2026-10-01T07:36:37+0000 INFO Repository already initialized
+2026-10-01T07:36:37+0000 INFO Checking for stale locks
+2026-10-01T07:36:37+0000 INFO Checking repo integrity
+2026-10-01T07:36:38+0000 INFO waiting initial delay of 0...
+2026-10-01T07:36:38+0000 INFO waiting for rcon readiness...
+2026-10-01T07:36:38+0000 INFO Command executed successfully rcon-cli list
+2026-10-01T07:36:38+0000 INFO Command executed successfully rcon-cli save-off
+2026-10-01T07:36:38+0000 INFO Command executed successfully rcon-cli save-all flush
+2026-10-01T07:36:38+0000 INFO Command executed successfully sync
+2026-10-01T07:36:38+0000 INFO Backing up content in /data as host minecraft
+2026-10-01T07:36:39+0000 INFO using parent snapshot bca2308a
+2026-10-01T07:36:39+0000 INFO 
+2026-10-01T07:36:39+0000 INFO Files:           0 new,    15 changed,   167 unmodified
+2026-10-01T07:36:39+0000 INFO Dirs:            0 new,    19 changed,   290 unmodified
+2026-10-01T07:36:39+0000 INFO Added to the repository: 31.959 KiB (13.171 KiB stored)
+2026-10-01T07:36:39+0000 INFO 
+2026-10-01T07:36:39+0000 INFO processed 182 files, 174.543 MiB in 0:00
+2026-10-01T07:36:39+0000 INFO snapshot b68ac97f saved
+2026-10-01T07:36:39+0000 INFO Command executed successfully rcon-cli save-on
+
+exit=0
