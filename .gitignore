@@ -13,3 +13,13 @@ plugins/server/
 plugins/proxy/
 web/
 node_modules/
+servers/
+worlds/
+database/
+rcon/
+backup/
+minimal/
+ports.env
+secrets.env
+schematics/
+downloads/files/

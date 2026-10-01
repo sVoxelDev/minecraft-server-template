@@ -58,7 +58,7 @@ Use the [START prompt](START.md) for a coding agent. Its discoverable [setup ski
 ./scripts/check-versions
 ```
 
-Static and local modes exercise the CLI and resolved Compose boundaries without starting containers. Full Docker mode accepts the EULA for disposable tests only, runs unique projects on ephemeral loopback ports, checks live protocol and RCON, recreates containers, and boots a restored world. It removes only its own resources and exports redacted command logs, assertions and versions. Read [the validation report](docs/validation.md) for actual results and limits. CI runs the local gate on every change and exposes a manual full runtime gate.
+Static and local modes exercise the CLI and resolved Compose boundaries without starting containers. Full Docker mode requires native Linux Docker networking and GNU `timeout`. It accepts the EULA for disposable tests only, runs unique projects on ephemeral loopback ports, checks live protocol and RCON, recreates containers, and boots a restored world. It removes only its own resources and exports redacted command logs, assertions and versions. Read [the validation report](docs/validation.md) for actual results and limits. CI runs the local gate on every change and exposes a manual full runtime gate.
 
 Existing 1.17 deployments must follow [the migration guide](docs/migration.md). Setup never upgrades production data. [Current standards](docs/current-standards.md) records the cited version and security decisions.
 

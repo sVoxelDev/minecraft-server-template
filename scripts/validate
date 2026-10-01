@@ -153,7 +153,7 @@ class Validation:
                 self.cli(vanilla, 'start')
                 self.status(vanilla, vanilla_port, '26.3')
                 self.check('Vanilla RCON works', 'players online' in self.rcon(vanilla, 'list'))
-                checksum = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'find /data -maxdepth 1 -name "*.jar" -exec sha1sum {} \;').stdout
+                checksum = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', r'find /data -maxdepth 1 -name "*.jar" -exec sha1sum {} \;').stdout
                 self.check('Vanilla downloaded artifact checksum', pins['VANILLA_SERVER_SHA1'] in checksum)
                 properties = self.cli(vanilla, 'compose', 'exec', '-T', 'server', 'sh', '-c', 'grep -E "^(online-mode|enable-query)=" /data/server.properties').stdout
                 self.check('effective Vanilla authentication and query settings', 'online-mode=true' in properties and 'enable-query=false' in properties)
