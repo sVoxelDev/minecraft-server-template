@@ -18,7 +18,7 @@ def copy_template(destination):
                     'servers', 'minimal', 'worlds', 'database', 'rcon', 'backup', 'schematics', 'downloads', 'files'}
         files = {str(path.relative_to(ROOT)) for path in ROOT.rglob('*') if path.is_file() and
                  not excluded.intersection(path.relative_to(ROOT).parts) and not path.name.endswith(('.secrets.env', '.jar')) and
-                 path.name != 'ports.env'}
+                 path.name not in {'.env', 'secrets.env', 'ports.env'}}
     for name in files:
         source = ROOT / name
         if source.is_file() and not name.startswith(('validation-output/', 'docs/proof/', 'configs/server/', 'plugins/server/', 'plugins/proxy/', 'web/')):

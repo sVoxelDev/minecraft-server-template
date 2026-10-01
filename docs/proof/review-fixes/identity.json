@@ -11,8 +11,12 @@
     "scripts/validate": "dd53cc621aeef73da805651ebd28e4c4af2f421277fa7a4ef825aa700757d8aa",
     "scripts/minecraft": "3c8df527f3775fbd21ad0c438ad6b6ef66436493bc799622eb72eb0c4b5757b5",
     "tests/login.py": "e92d086ab9e6284cae1147df0d04baba6bdbc93cb27ea4fc3a4e60acdc088004",
-    "tests/test_cli.py": "b5511afe70d59edb0ffb96b1aa85fbcd435f362983a15ce2bef90a16c3292333"
+    "tests/test_cli.py": "52af676c46a5f6f5ea3d09a2e249aef23bcb54d1fbcccc57cc55854693e7da94"
   },
   "archive_source": "git archive HEAD; no Git index",
-  "additional_build_input": "Dockerfile.backup.dockerignore restricts the derived-image build context; GitHub runtime verifies this final input."
+  "additional_build_input": "Dockerfile.backup.dockerignore restricts the derived-image build context; GitHub runtime verifies this final input.",
+  "post_archive_changes": [
+    "Dockerfile.backup.dockerignore restricts build input",
+    "archive fallback additionally excludes legacy .env/secrets.env; final local gate passed; GitHub full gate verifies final helper"
+  ]
 }
