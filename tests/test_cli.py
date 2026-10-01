@@ -58,6 +58,25 @@ class SetupBoundary(unittest.TestCase):
         secret.write_text('')
         self.assertNotEqual(self.invoke('setup', '--accept-eula').returncode, 0)
 
+    def test_doctor_reports_unavailable_docker_without_exposing_credentials(self):
+        self.assertEqual(self.invoke('setup', '--accept-eula').returncode, 0)
+        binary = self.root / 'without docker'
+        binary.mkdir()
+        (binary / 'python3').symlink_to(shutil.which('python3'))
+        result = subprocess.run([str(self.cli), 'doctor'], env={'PATH': str(binary)}, cwd='/tmp',
+                                stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=30)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('docker', result.stderr)
+        self.assertNotIn((self.root / '.state/secrets/rcon').read_text().strip(), result.stdout + result.stderr)
+
+    def test_doctor_refuses_contradictory_authentication(self):
+        self.assertEqual(self.invoke('setup', '--accept-eula').returncode, 0)
+        config = self.root / '.state/compose.yaml'
+        config.write_text(json.dumps({'services': {'server': {'environment': {'ONLINE_MODE': 'false'}}}}))
+        result = self.invoke('doctor')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('authentication contradicts', result.stderr)
+
     def test_legacy_deployment_is_refused(self):
         (self.root / 'servers/main').mkdir(parents=True)
         self.assertNotEqual(self.invoke('setup', '--accept-eula').returncode, 0)
@@ -78,6 +97,7 @@ class SetupBoundary(unittest.TestCase):
                 server = config['services']['server']
                 self.assertEqual(server['environment']['ONLINE_MODE'], 'false' if '--network' in options else 'true')
                 self.assertEqual(server['environment']['ENABLE_QUERY'], 'false')
+                self.assertEqual(server['environment']['VERSION'], '26.3' if 'vanilla' in options else '26.2')
                 self.assertNotIn('/var/run/docker.sock', str(config))
                 if '--network' in options:
                     self.assertFalse(server.get('ports'))

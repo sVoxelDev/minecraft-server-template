@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import importlib.machinery
+import importlib.util
 import json
 from pathlib import Path
 import socket
@@ -10,7 +11,9 @@ import subprocess
 import time
 import zlib
 
-protocol = importlib.machinery.SourceFileLoader('status_protocol', str(Path(__file__).resolve().parents[1] / 'scripts/status')).load_module()
+loader = importlib.machinery.SourceFileLoader('status_protocol', str(Path(__file__).resolve().parents[1] / 'scripts/status'))
+protocol = importlib.util.module_from_spec(importlib.util.spec_from_loader(loader.name, loader))
+loader.exec_module(protocol)
 
 
 def string(value):

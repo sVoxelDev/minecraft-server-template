@@ -97,17 +97,17 @@ def setup(args):
     config = {'distribution': args.distribution, 'network': args.network, 'port': args.port,
               'bind': args.bind, 'memory': args.memory, 'profiles': sorted(args.profile),
               'motd': args.motd, 'web_port': args.web_port}
-    current = pins()
     profiles = sorted(set(args.profile + (['proxy'] if args.network else [])))
     env = {'COMPOSE_PROJECT_NAME': 'minecraft-' + secrets.token_hex(4), 'COMPOSE_PROFILES': ','.join(profiles),
            'RUN_UID': str(os.getuid()), 'RUN_GID': str(os.getgid()), 'EULA': 'TRUE',
            'DISTRIBUTION': args.distribution.upper(),
-           'MC_VERSION': current['PAPER_VERSION' if args.distribution == 'paper' else 'VANILLA_VERSION'],
            'MEMORY': args.memory, 'CONTAINER_MEMORY': str(mb + 1024) + 'M',
            'ONLINE_MODE': str(not args.network).lower(), 'GAME_PORT': str(args.port),
            'BIND_ADDRESS': binding, 'WEB_PORT': str(args.web_port), 'MOTD': args.motd}
     (STATE / 'settings.env').write_text(''.join(key + '=' + "'" + value.replace("'", "\\'") + "'\n" for key, value in env.items()))
     overlay = {'services': {'server': {}}}
+    if args.distribution == 'vanilla':
+        overlay['services']['server']['environment'] = {'VERSION': '${VANILLA_VERSION:?}'}
     if not args.network:
         overlay['services']['server']['ports'] = [f'{binding}:{args.port}:25565']
     (STATE / 'compose.yaml').write_text(json.dumps(overlay))
@@ -141,6 +141,44 @@ accepts-transfers = false
     emit({'setup': 'created', 'distribution': args.distribution, 'network': args.network, 'profiles': profiles})
 
 
+def validate_security(config):
+    resolved = json.loads(compose('config', '--format', 'json', timeout=30, capture=True).stdout)
+    server = resolved['services']['server']
+    expected_online = str(not config['network']).lower()
+    if server['environment']['ONLINE_MODE'].lower() != expected_online:
+        raise ValueError('Server authentication contradicts the selected topology.')
+    if config['network'] and server.get('ports'):
+        raise ValueError('Proxy backends must have no published ports.')
+    if resolved['services'].get('database', {}).get('ports'):
+        raise ValueError('Database ports must remain unpublished.')
+    for name in ['server', 'proxy']:
+        service = resolved['services'].get(name, {})
+        if any(port['target'] != 25565 for port in service.get('ports', [])):
+            raise ValueError('RCON and debug ports must remain unpublished.')
+    global_file = ROOT / 'configs/server/config/paper-global.yml'
+    if not global_file.exists():
+        global_file = ROOT / 'data/server/config/paper-global.yml'
+    if global_file.exists():
+        content = global_file.read_text()
+        block = re.search(r'(?ms)^  velocity:\n(.*?)(?=^\S|^  \S|\Z)', content)
+        forwarding = block.group(1) if block else ''
+        enabled = bool(re.search(r'(?m)^\s+enabled:\s*true\s*$', forwarding))
+        if enabled != config['network']:
+            raise ValueError('Paper forwarding contradicts the selected topology.')
+        if config['network'] and (not re.search(r'(?m)^\s+online-mode:\s*true\s*$', forwarding) or
+                                  not re.search(r'(?m)^\s+secret:\s*[\"\']?' + (STATE / 'secrets/forwarding').read_text().strip() + r'[\"\']?\s*$', forwarding)):
+            raise ValueError('Paper modern forwarding authentication or secret is inconsistent.')
+    elif config['network']:
+        raise ValueError('Missing Paper modern forwarding configuration.')
+    spigot = ROOT / 'configs/server/spigot.yml'
+    if spigot.exists() and re.search(r'(?m)^\s*bungeecord:\s*true(?:\s|$)', spigot.read_text()):
+        raise ValueError('Legacy Bungee forwarding must be disabled.')
+    if config['network']:
+        velocity = (STATE / 'velocity.toml').read_text()
+        if not re.search(r'(?m)^online-mode\s*=\s*true\s*$', velocity) or 'player-info-forwarding-mode = "modern"' not in velocity:
+            raise ValueError('Velocity must authenticate online with modern forwarding.')
+
+
 def doctor():
     version = json.loads(run(['docker', 'version', '--format', '{{json .}}'], 30, True).stdout)
     major = int(version['Server']['Version'].split('.')[0])
@@ -149,7 +187,7 @@ def doctor():
     plugin = run(['docker', 'compose', 'version', '--short'], 30, True).stdout.strip()
     if not re.match(r'v?[25]\.', plugin):
         raise ValueError('Docker Compose plugin v2 or v5 is required.')
-    compose('config', '--quiet', timeout=30)
+    validate_security(settings())
     emit({'docker': version['Server']['Version'], 'architecture': version['Server']['Arch'], 'compose': plugin,
           'configuration': 'valid', 'pins': pins()})
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 from datetime import datetime, timezone
-import importlib.machinery
 import json
 from pathlib import Path
 import shutil
@@ -28,6 +27,7 @@ class Validation:
         self.output = output
         self.output.mkdir(parents=True, exist_ok=True)
         self.projects = []
+        self.stopped = set()
         self.temporary = tempfile.TemporaryDirectory(prefix='minecraft validation ')
         self.results = []
 
@@ -56,6 +56,10 @@ class Validation:
         return result
 
     def cli(self, root, *args, **kwargs):
+        if args and args[0] == 'stop':
+            self.execute(root, [root / 'scripts/minecraft', 'compose', 'logs', '--no-color'], limit=60, success=False)
+            self.execute(root, [root / 'scripts/minecraft', 'compose', 'images', '--format', 'json'], limit=30, success=False)
+            self.stopped.add(root)
         return self.execute(root, [root / 'scripts/minecraft', *args], **kwargs)
 
     def check(self, label, condition):
@@ -186,11 +190,22 @@ class Validation:
             cleanup_ok = True
             for root in reversed(self.projects):
                 if (root / '.state/settings.json').exists():
-                    self.cli(root, 'compose', 'logs', '--no-color', limit=60, success=False)
+                    if root not in self.stopped:
+                        self.cli(root, 'compose', 'logs', '--no-color', limit=60, success=False)
                     result = self.cli(root, 'compose', 'down', '--volumes', '--remove-orphans', '--timeout', '120', limit=240, success=False)
                     cleanup_ok = cleanup_ok and result.returncode == 0
             after = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
-            self.check('owned resources removed and unrelated container inventory preserved', cleanup_ok and set(after) == set(before))
+            (self.output / 'inventory-diff.json').write_text(json.dumps({'removed_unrelated_ids': sorted(set(before) - set(after)), 'added_unrelated_ids': sorted(set(after) - set(before)), 'preserved_ids': sorted(set(before) & set(after))}, indent=2) + '\n')
+            remaining = []
+            for root in self.projects:
+                values = dict(line.split('=', 1) for line in (root / '.state/settings.env').read_text().splitlines())
+                project = values['COMPOSE_PROJECT_NAME'].strip("'")
+                for kind in ['container', 'network', 'volume']:
+                    owned = self.execute(ROOT, ['docker', kind, 'ls', '-q', '--filter', 'label=com.docker.compose.project=' + project], limit=30).stdout.strip()
+                    if owned:
+                        remaining.append({'project': project, 'kind': kind, 'ids': owned})
+            (self.output / 'cleanup.json').write_text(json.dumps({'remaining': remaining}, indent=2) + '\n')
+            self.check('owned containers networks and volumes removed', cleanup_ok and not remaining)
             if cleanup_ok:
                 self.temporary.cleanup()
             else:

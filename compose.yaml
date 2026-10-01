@@ -9,7 +9,7 @@ services:
     environment:
       EULA: ${EULA:?}
       TYPE: ${DISTRIBUTION:?}
-      VERSION: ${MC_VERSION:?}
+      VERSION: ${PAPER_VERSION:?}
       PAPER_BUILD: ${PAPER_BUILD:?}
       MEMORY: ${MEMORY:?}
       ONLINE_MODE: ${ONLINE_MODE:?}
