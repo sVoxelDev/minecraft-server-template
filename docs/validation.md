@@ -60,3 +60,5 @@ The independent [standards](proof/review-findings/review-standards.md) and [spec
 | Current actions / AMD64 | Official action release identities are in `proof/actions.json`; GitHub PR jobs run the public local/version/full gates and upload proof even on failure. |
 | Updated pins / future protocol | Runtime jar/build/hash assertions use `versions.env`; [unsupported future client proof](proof/review-fixes/unsupported-protocol.json) fails before connecting. |
 | Archive validation | Both successful ARM64 full runs used `git archive` source without an index. Fallback excludes protected generated/legacy paths. |
+
+The first GitHub AMD64 run passed all server/integration assertions but failed cleanup because cold-image `docker create` pull progress was merged into the captured sentinel ID. [Failure proof](proof/review-findings/ci-amd64-cold-image-failure/summary.json) remains committed. The harness now uses its unique owned sentinel name and independently inspects its exact64hex ID; pull output cannot become a Docker resource identifier. Final CI must prove both sentinel survival and removal.

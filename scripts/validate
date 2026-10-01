@@ -164,8 +164,12 @@ class Validation:
         (self.output / 'versions.env').write_text((ROOT / 'versions.env').read_text())
         self.execute(ROOT, ['docker', 'version'], limit=30)
         self.sentinel_project = 'minecraft-sentinel-' + secrets.token_hex(8)
-        sentinel = self.execute(ROOT, ['docker', 'create', '--label', 'com.docker.compose.project=' + self.sentinel_project,
-                               '--name', self.sentinel_project, PINS['WEB_IMAGE']], limit=60).stdout.strip()
+        sentinel = self.sentinel_project
+        self.execute(ROOT, ['docker', 'create', '--label', 'com.docker.compose.project=' + sentinel,
+                            '--name', sentinel, PINS['WEB_IMAGE']], limit=60)
+        sentinel_id = self.execute(ROOT, ['docker', 'inspect', '--format', '{{.Id}}', sentinel], limit=30).stdout.strip()
+        if len(sentinel_id) != 64 or any(char not in '0123456789abcdef' for char in sentinel_id):
+            raise ValueError('Docker did not return a valid owned sentinel identity.')
         try:
             if scenario == 'all':
                 paper, game_port = self.fresh('stable paper', '--profile', 'backup', '--profile', 'database', '--profile', 'web')
@@ -286,7 +290,7 @@ class Validation:
                     cleanup_ok = cleanup_ok and result.returncode == 0
             sentinel_alive = self.execute(ROOT, ['docker', 'inspect', '--format', '{{.Id}}', sentinel], limit=30, success=False)
             self.execute(ROOT, ['docker', 'rm', sentinel], limit=30)
-            self.check('unrelated stable sentinel survives contaminated cleanup', sentinel_alive.returncode == 0 and sentinel in sentinel_alive.stdout)
+            self.check('unrelated stable sentinel survives contaminated cleanup', sentinel_alive.returncode == 0 and sentinel_id in sentinel_alive.stdout)
             after = self.execute(ROOT, ['docker', 'ps', '-aq'], limit=30).stdout.splitlines()
             (self.output / 'inventory-diff.json').write_text(json.dumps({'removed_unrelated_ids': sorted(set(before) - set(after)), 'added_unrelated_ids': sorted(set(after) - set(before)), 'preserved_ids': sorted(set(before) & set(after))}, indent=2) + '\n')
             remaining = []
